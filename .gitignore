@@ -1,2 +1,5 @@
+mumble-server.key
+mumble-server.pem
+
 /vendor
 /target
