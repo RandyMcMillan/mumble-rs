@@ -19,6 +19,9 @@ log = "0.4"
 env_logger = "0.11"
 clap = { version = "4.5.20", features = ["derive", "env", "cargo"] }
 
+[dev-dependencies]
+expectrl = "0.8.0"
+
 [[bin]]
 name = "mumble-server"
 path = "src/bin/mumble-server.rs"
