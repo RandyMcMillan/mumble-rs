@@ -516,21 +516,58 @@ fn read_config(file_path: &str) -> Result<MetaParams> {
 
     let mut params = MetaParams::default();
 
-    let port_result_option_i64 = config_parser.getint("General", "port");
-    params.port = match port_result_option_i64 {
-        Ok(Some(i)) => i as u16,
-        _ => params.port,
-    };
+    // Helper functions for parsing
+    fn get_string(parser: &Ini, key: &str, default: String) -> String {
+        parser.get("General", key).unwrap_or(default)
+    }
 
-    params.welcome_text = config_parser.get("General", "welcometext")
-        .unwrap_or(params.welcome_text.clone());
+    fn get_i32(parser: &Ini, key: &str, default: i32) -> i32 {
+        parser.getint("General", key).ok().flatten().map(|v| v as i32).unwrap_or(default)
+    }
+    
+    fn get_u32(parser: &Ini, key: &str, default: u32) -> u32 {
+        parser.getint("General", key).ok().flatten().map(|v| v as u32).unwrap_or(default)
+    }
 
-    params.ssl_cert = config_parser.get("General", "sslCert")
-        .unwrap_or(params.ssl_cert.clone());
-    params.ssl_key = config_parser.get("General", "sslKey")
-        .unwrap_or(params.ssl_key.clone());
+    fn get_u16(parser: &Ini, key: &str, default: u16) -> u16 {
+        parser.getint("General", key).ok().flatten().map(|v| v as u16).unwrap_or(default)
+    }
 
-    // Parse other fields as needed
+    fn get_bool(parser: &Ini, key: &str, default: bool) -> bool {
+        parser.getbool("General", key).ok().flatten().unwrap_or(default)
+    }
+
+    params.port = get_u16(&config_parser, "port", params.port);
+    params.max_users = get_u32(&config_parser, "users", params.max_users);
+    params.welcome_text = get_string(&config_parser, "welcometext", params.welcome_text);
+    params.ssl_cert = get_string(&config_parser, "sslCert", params.ssl_cert);
+    params.ssl_key = get_string(&config_parser, "sslKey", params.ssl_key);
+    params.database = get_string(&config_parser, "database", params.database);
+    params.db_driver = get_string(&config_parser, "dbDriver", params.db_driver);
+    params.db_username = get_string(&config_parser, "dbUsername", params.db_username);
+    params.db_password = get_string(&config_parser, "dbPassword", params.db_password);
+    params.db_hostname = get_string(&config_parser, "dbHost", params.db_hostname);
+    params.db_port = get_i32(&config_parser, "dbPort", params.db_port);
+    params.db_prefix = get_string(&config_parser, "dbPrefix", params.db_prefix);
+    params.db_opts = get_string(&config_parser, "dbOpts", params.db_opts);
+    params.sqlite_wal = get_i32(&config_parser, "sqlite_wal", params.sqlite_wal);
+    params.timeout = get_i32(&config_parser, "timeout", params.timeout);
+    params.max_bandwidth = get_i32(&config_parser, "bandwidth", params.max_bandwidth);
+    params.max_users_per_channel = get_u32(&config_parser, "usersperchannel", params.max_users_per_channel);
+    params.password = get_string(&config_parser, "password", params.password);
+    params.allow_html = get_bool(&config_parser, "allowhtml", params.allow_html);
+    params.remember_channel = get_bool(&config_parser, "rememberchannel", params.remember_channel);
+    params.log_days = get_i32(&config_parser, "logdays", params.log_days);
+    params.logfile = get_string(&config_parser, "logfile", params.logfile);
+    params.pid_file = get_string(&config_parser, "pidfile", params.pid_file);
+    params.bonjour = get_bool(&config_parser, "bonjour", params.bonjour);
+    params.reg_name = get_string(&config_parser, "registername", params.reg_name);
+    params.reg_password = get_string(&config_parser, "registerpassword", params.reg_password);
+    params.reg_host = get_string(&config_parser, "registerhost", params.reg_host);
+    params.reg_location = get_string(&config_parser, "registerlocation", params.reg_location);
+    params.reg_web_url = get_string(&config_parser, "registerurl", params.reg_web_url);
+    params.ciphers = get_string(&config_parser, "ciphers", params.ciphers);
+    params.send_version = get_bool(&config_parser, "sendversion", params.send_version);
 
     Ok(params)
 }
@@ -624,10 +661,19 @@ async fn main() -> Result<()> {
     let cert_file = params.ssl_cert.clone();
     let key_file = params.ssl_key.clone();
 
-    let certs = rustls_pemfile::certs(&mut std::io::BufReader::new(std::fs::File::open(&cert_file)?))
-        .collect::<Result<Vec<_>, _>>()?;
-    let mut keys = rustls_pemfile::pkcs8_private_keys(&mut std::io::BufReader::new(std::fs::File::open(&key_file)?))
-        .collect::<Result<Vec<_>, _>>()?;
+    if cert_file.is_empty() || key_file.is_empty() {
+        return Err(anyhow!("'sslCert' and 'sslKey' must be set in the config file or via command line arguments."));
+    }
+
+    let certs = rustls_pemfile::certs(&mut std::io::BufReader::new(std::fs::File::open(&cert_file)
+        .map_err(|e| anyhow!("Failed to open cert file '{}': {}", &cert_file, e))?))
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| anyhow!("Failed to parse cert file '{}': {}", &cert_file, e))?;
+
+    let mut keys = rustls_pemfile::pkcs8_private_keys(&mut std::io::BufReader::new(std::fs::File::open(&key_file)
+        .map_err(|e| anyhow!("Failed to open key file '{}': {}", &key_file, e))?))
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| anyhow!("Failed to parse key file '{}': {}", &key_file, e))?;
 
     let key = if let Some(k) = keys.pop() {
         k
