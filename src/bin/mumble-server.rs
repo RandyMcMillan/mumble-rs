@@ -300,12 +300,17 @@ async fn main() -> Result<()> {
 
     info!("Starting Mumble server...");
 
-    let cert_file = params.ssl_cert.clone();
-    let key_file = params.ssl_key.clone();
+    let mut cert_file = params.ssl_cert.clone();
+    let mut key_file = params.ssl_key.clone();
 
     if config.generate_cert || config.generate_keys {
-        if cert_file.is_empty() || key_file.is_empty() {
-            return Err(anyhow!("'sslCert' and 'sslKey' must be set in the config file or via command line arguments to generate a certificate."));
+        if cert_file.is_empty() {
+            cert_file = "mumble-server.pem".to_string();
+            info!("'sslCert' not set, using default: {}", cert_file);
+        }
+        if key_file.is_empty() {
+            key_file = "mumble-server.key".to_string();
+            info!("'sslKey' not set, using default: {}", key_file);
         }
         generate_cert(&cert_file, &key_file, config.key_from_hash.as_deref())?;
         return Ok(());
