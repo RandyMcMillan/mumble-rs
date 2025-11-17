@@ -19,9 +19,9 @@ use tokio::signal::unix::{signal, SignalKind};
 use mumble::config::{MetaParams, DbConnectionParameter};
 use mumble::cli;
 use mumble::tui::Tui;
-use rcgen::{generate_simple_self_signed, Certificate, CertificateParams, DistinguishedName, KeyPair, PKCS_ED25519};
+use rcgen::{generate_simple_self_signed, CertificateParams, DistinguishedName, KeyPair, PKCS_ED25519};
 use ed25519_dalek::SigningKey;
-use pkcs8::{EncodePrivateKey, LineEnding};
+use pkcs8::EncodePrivateKey;
 
 fn generate_cert(cert_path: &str, key_path: &str, hash_seed: Option<&str>) -> Result<()> {
     if let Some(hash) = hash_seed {
