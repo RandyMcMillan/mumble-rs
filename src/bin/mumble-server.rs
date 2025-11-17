@@ -19,6 +19,19 @@ use tokio::signal::unix::{signal, SignalKind};
 use mumble::config::{MetaParams, DbConnectionParameter};
 use mumble::cli;
 use mumble::tui::Tui;
+use rcgen::generate_simple_self_signed;
+
+fn generate_cert(cert_path: &str, key_path: &str) -> Result<()> {
+    info!("Generating new self-signed certificate...");
+    let subject_alt_names = vec!["localhost".to_string()];
+    let cert = generate_simple_self_signed(subject_alt_names)?;
+    let cert_pem = cert.cert.pem();
+    let key_pem = cert.signing_key.serialize_pem();
+    std::fs::write(cert_path, cert_pem)?;
+    std::fs::write(key_path, key_pem)?;
+    info!("Certificate and key saved to {} and {}", cert_path, key_path);
+    Ok(())
+}
 
 // Placeholder for the Server struct
 pub struct Server {
@@ -232,6 +245,10 @@ async fn main() -> Result<()> {
 
     if cert_file.is_empty() || key_file.is_empty() {
         return Err(anyhow!("'sslCert' and 'sslKey' must be set in the config file or via command line arguments."));
+    }
+
+    if !std::path::Path::new(&cert_file).exists() || !std::path::Path::new(&key_file).exists() {
+        generate_cert(&cert_file, &key_file)?;
     }
 
     let certs = rustls_pemfile::certs(&mut std::io::BufReader::new(std::fs::File::open(&cert_file)
