@@ -146,10 +146,20 @@ struct Args {
     ssl_cert: Option<String>,
     #[arg(long, env = "MUMBLE_SSL_KEY")]
     ssl_key: Option<String>,
+
+    /// Enable the terminal user interface
+    #[arg(long)]
+    tui: bool,
 }
 
-pub fn load_and_merge_config() -> MetaParams {
+pub struct Config {
+    pub params: MetaParams,
+    pub tui: bool,
+}
+
+pub fn load_and_merge_config() -> Config {
     let args = Args::parse();
+    let tui = args.tui;
 
     // Load configuration from file, or use defaults if file is not found or invalid
     let mut params = read_config(&args.config).unwrap_or_else(|e| {
@@ -227,5 +237,8 @@ pub fn load_and_merge_config() -> MetaParams {
     if let Some(val) = args.ssl_cert { params.ssl_cert = val; }
     if let Some(val) = args.ssl_key { params.ssl_key = val; }
 
-    params
+    Config {
+        params,
+        tui,
+    }
 }

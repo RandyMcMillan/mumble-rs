@@ -200,7 +200,8 @@ async fn main() -> Result<()> {
     env_logger::init();
     info!("Starting Mumble server...");
 
-    let params = cli::load_and_merge_config();
+    let config = cli::load_and_merge_config();
+    let params = config.params;
 
     info!("Server configured with port: {} and welcome text: {}", params.port, params.welcome_text);
 
