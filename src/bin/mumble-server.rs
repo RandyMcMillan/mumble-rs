@@ -237,18 +237,26 @@ async fn main() -> Result<()> {
 
     info!("Starting Mumble server...");
 
-    info!("Server configured with port: {} and welcome text: {}", params.port, params.welcome_text);
-
-    // Load SSL/TLS certificate and key from files
     let cert_file = params.ssl_cert.clone();
     let key_file = params.ssl_key.clone();
 
+    if config.generate_cert {
+        if cert_file.is_empty() || key_file.is_empty() {
+            return Err(anyhow!("'sslCert' and 'sslKey' must be set in the config file or via command line arguments to generate a certificate."));
+        }
+        generate_cert(&cert_file, &key_file)?;
+        return Ok(());
+    }
+
+    info!("Server configured with port: {} and welcome text: {}", params.port, params.welcome_text);
+
+    // Load SSL/TLS certificate and key from files
     if cert_file.is_empty() || key_file.is_empty() {
         return Err(anyhow!("'sslCert' and 'sslKey' must be set in the config file or via command line arguments."));
     }
 
     if !std::path::Path::new(&cert_file).exists() || !std::path::Path::new(&key_file).exists() {
-        generate_cert(&cert_file, &key_file)?;
+        return Err(anyhow!("Certificate or key file not found. Use --generate-cert to create them."));
     }
 
     let certs = rustls_pemfile::certs(&mut std::io::BufReader::new(std::fs::File::open(&cert_file)

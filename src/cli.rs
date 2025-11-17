@@ -150,16 +150,22 @@ struct Args {
     /// Enable the terminal user interface
     #[arg(long)]
     tui: bool,
+
+    /// Generate a new self-signed certificate and key
+    #[arg(long)]
+    generate_cert: bool,
 }
 
 pub struct Config {
     pub params: MetaParams,
     pub tui: bool,
+    pub generate_cert: bool,
 }
 
 pub fn load_and_merge_config() -> Config {
     let args = Args::parse();
     let tui = args.tui;
+    let generate_cert = args.generate_cert;
 
     // Load configuration from file, or use defaults if file is not found or invalid
     let mut params = read_config(&args.config).unwrap_or_else(|e| {
@@ -240,5 +246,6 @@ pub fn load_and_merge_config() -> Config {
     Config {
         params,
         tui,
+        generate_cert,
     }
 }
