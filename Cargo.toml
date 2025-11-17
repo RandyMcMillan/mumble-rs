@@ -6,22 +6,28 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[dependencies]
-mumble-sys = { path = "./mumble-sys" }
-tokio = { version = "1", features = ["full"] }
-configparser = "1.0.0"
-anyhow = "1.0"
-rusqlite = "0.31"
-rustls-pemfile = "2.0.0"
-tokio-rustls = "0.26"
-rustls = "0.23"
-log = "0.4"
-env_logger = "0.11"
-clap = { version = "4.5.20", features = ["derive", "env", "cargo"] }
-
-[dev-dependencies]
-expectrl = "0.8.0"
-
 [[bin]]
 name = "mumble-server"
 path = "src/bin/mumble-server.rs"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.5.20", features = ["derive", "env", "cargo"] }
+configparser = "1.0.0"
+crossbeam-channel = "0.5"
+crossterm = { version = "0.28.0", features = ["event-stream", "serde"] }
+env_logger = "0.11"
+log = "0.4"
+mumble-sys = { path = "./mumble-sys" }
+ratatui = { version = "0.28", default-features = false, features = [
+    'crossterm',
+    'serde',
+] }
+rusqlite = "0.31"
+rustls = "0.23"
+rustls-pemfile = "2.0.0"
+tokio = { version = "1", features = ["full"] }
+tokio-rustls = "0.26"
+
+[dev-dependencies]
+expectrl = "0.8.0"

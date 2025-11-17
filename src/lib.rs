@@ -6,6 +6,7 @@ use mumble_sys::*;
 
 pub mod cli;
 pub mod config;
+pub mod tui;
 
 #[no_mangle]
 pub extern "C" fn get_error_code_value(error_code: mumble_error_t) -> i32 {
