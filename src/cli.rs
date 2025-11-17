@@ -1,5 +1,5 @@
+use crate::config::{read_config, MetaParams};
 use clap::Parser;
-use crate::config::{MetaParams, read_config};
 use log::info;
 
 /// Mumble server (murmur)
@@ -181,79 +181,218 @@ pub fn load_and_merge_config() -> Config {
 
     // Load configuration from file, or use defaults if file is not found or invalid
     let mut params = read_config(&args.config).unwrap_or_else(|e| {
-        info!("Cannot read config file '{}': {}. Using defaults.", &args.config, e);
+        info!(
+            "Cannot read config file '{}': {}. Using defaults.",
+            &args.config, e
+        );
         MetaParams::default()
     });
 
     // Override with CLI arguments if provided
-    if let Some(val) = args.base_path { params.base_path = val; }
-    if !args.bind_addresses.is_empty() { params.bind_addresses = args.bind_addresses; }
-    if let Some(val) = args.port { params.port = val; }
-    if let Some(val) = args.timeout { params.timeout = val; }
-    if let Some(val) = args.max_bandwidth { params.max_bandwidth = val; }
-    if let Some(val) = args.max_users { params.max_users = val; }
-    if let Some(val) = args.max_users_per_channel { params.max_users_per_channel = val; }
-    if let Some(val) = args.max_listeners_per_channel { params.max_listeners_per_channel = val; }
-    if let Some(val) = args.max_listener_proxies_per_user { params.max_listener_proxies_per_user = val; }
-    if let Some(val) = args.default_channel { params.default_channel = val; }
-    if let Some(val) = args.remember_channel { params.remember_channel = val; }
-    if let Some(val) = args.remember_channel_duration { params.remember_channel_duration = val; }
-    if let Some(val) = args.max_text_message_length { params.max_text_message_length = val; }
-    if let Some(val) = args.max_image_message_length { params.max_image_message_length = val; }
-    if let Some(val) = args.opus_threshold { params.opus_threshold = val; }
-    if let Some(val) = args.channel_nesting_limit { params.channel_nesting_limit = val; }
-    if let Some(val) = args.channel_count_limit { params.channel_count_limit = val; }
-    if let Some(val) = args.legacy_password_hash { params.legacy_password_hash = val; }
-    if let Some(val) = args.kdf_iterations { params.kdf_iterations = val; }
-    if let Some(val) = args.allow_html { params.allow_html = val; }
-    if let Some(val) = args.password { params.password = val; }
-    if let Some(val) = args.welcome_text { params.welcome_text = val; }
-    if let Some(val) = args.welcome_text_file { params.welcome_text_file = val; }
-    if let Some(val) = args.cert_required { params.cert_required = val; }
-    if let Some(val) = args.force_external_auth { params.force_external_auth = val; }
-    if let Some(val) = args.ban_tries { params.ban_tries = val; }
-    if let Some(val) = args.ban_timeframe { params.ban_timeframe = val; }
-    if let Some(val) = args.ban_time { params.ban_time = val; }
-    if let Some(val) = args.ban_successful { params.ban_successful = val; }
-    if let Some(val) = args.database { params.database = val; }
-    if let Some(val) = args.sqlite_wal { params.sqlite_wal = val; }
-    if let Some(val) = args.db_driver { params.db_driver = val; }
-    if let Some(val) = args.db_username { params.db_username = val; }
-    if let Some(val) = args.db_password { params.db_password = val; }
-    if let Some(val) = args.db_hostname { params.db_hostname = val; }
-    if let Some(val) = args.db_prefix { params.db_prefix = val; }
-    if let Some(val) = args.db_opts { params.db_opts = val; }
-    if let Some(val) = args.db_port { params.db_port = val; }
-    if let Some(val) = args.log_days { params.log_days = val; }
-    if let Some(val) = args.obfuscate { params.obfuscate = val; }
-    if let Some(val) = args.send_version { params.send_version = val; }
-    if let Some(val) = args.allow_ping { params.allow_ping = val; }
-    if let Some(val) = args.logfile { params.logfile = val; }
-    if let Some(val) = args.pid_file { params.pid_file = val; }
-    if let Some(val) = args.ice_endpoint { params.ice_endpoint = val; }
-    if let Some(val) = args.ice_secret_read { params.ice_secret_read = val; }
-    if let Some(val) = args.ice_secret_write { params.ice_secret_write = val; }
-    if let Some(val) = args.reg_name { params.reg_name = val; }
-    if let Some(val) = args.reg_password { params.reg_password = val; }
-    if let Some(val) = args.reg_host { params.reg_host = val; }
-    if let Some(val) = args.reg_location { params.reg_location = val; }
-    if let Some(val) = args.reg_web_url { params.reg_web_url = val; }
-    if let Some(val) = args.bonjour { params.bonjour = val; }
-    if let Some(val) = args.message_limit { params.message_limit = val; }
-    if let Some(val) = args.message_burst { params.message_burst = val; }
-    if let Some(val) = args.plugin_message_limit { params.plugin_message_limit = val; }
-    if let Some(val) = args.plugin_message_burst { params.plugin_message_burst = val; }
-    if let Some(val) = args.broadcast_listener_volume_adjustments { params.broadcast_listener_volume_adjustments = val; }
-    if let Some(val) = args.ciphers { params.ciphers = val; }
-    if let Some(val) = args.suggest_positional { params.suggest_positional = Some(val); }
-    if let Some(val) = args.suggest_push_to_talk { params.suggest_push_to_talk = Some(val); }
-    if let Some(val) = args.log_group_changes { params.log_group_changes = val; }
-    if let Some(val) = args.log_acl_changes { params.log_acl_changes = val; }
-    if let Some(val) = args.allow_recording { params.allow_recording = val; }
-    if let Some(val) = args.rolling_stats_window { params.rolling_stats_window = val; }
-    if let Some(val) = args.abs_settings_file_path { params.abs_settings_file_path = val; }
-    if let Some(val) = args.ssl_cert { params.ssl_cert = val; }
-    if let Some(val) = args.ssl_key { params.ssl_key = val; }
+    if let Some(val) = args.base_path {
+        params.base_path = val;
+    }
+    if !args.bind_addresses.is_empty() {
+        params.bind_addresses = args.bind_addresses;
+    }
+    if let Some(val) = args.port {
+        params.port = val;
+    }
+    if let Some(val) = args.timeout {
+        params.timeout = val;
+    }
+    if let Some(val) = args.max_bandwidth {
+        params.max_bandwidth = val;
+    }
+    if let Some(val) = args.max_users {
+        params.max_users = val;
+    }
+    if let Some(val) = args.max_users_per_channel {
+        params.max_users_per_channel = val;
+    }
+    if let Some(val) = args.max_listeners_per_channel {
+        params.max_listeners_per_channel = val;
+    }
+    if let Some(val) = args.max_listener_proxies_per_user {
+        params.max_listener_proxies_per_user = val;
+    }
+    if let Some(val) = args.default_channel {
+        params.default_channel = val;
+    }
+    if let Some(val) = args.remember_channel {
+        params.remember_channel = val;
+    }
+    if let Some(val) = args.remember_channel_duration {
+        params.remember_channel_duration = val;
+    }
+    if let Some(val) = args.max_text_message_length {
+        params.max_text_message_length = val;
+    }
+    if let Some(val) = args.max_image_message_length {
+        params.max_image_message_length = val;
+    }
+    if let Some(val) = args.opus_threshold {
+        params.opus_threshold = val;
+    }
+    if let Some(val) = args.channel_nesting_limit {
+        params.channel_nesting_limit = val;
+    }
+    if let Some(val) = args.channel_count_limit {
+        params.channel_count_limit = val;
+    }
+    if let Some(val) = args.legacy_password_hash {
+        params.legacy_password_hash = val;
+    }
+    if let Some(val) = args.kdf_iterations {
+        params.kdf_iterations = val;
+    }
+    if let Some(val) = args.allow_html {
+        params.allow_html = val;
+    }
+    if let Some(val) = args.password {
+        params.password = val;
+    }
+    if let Some(val) = args.welcome_text {
+        params.welcome_text = val;
+    }
+    if let Some(val) = args.welcome_text_file {
+        params.welcome_text_file = val;
+    }
+    if let Some(val) = args.cert_required {
+        params.cert_required = val;
+    }
+    if let Some(val) = args.force_external_auth {
+        params.force_external_auth = val;
+    }
+    if let Some(val) = args.ban_tries {
+        params.ban_tries = val;
+    }
+    if let Some(val) = args.ban_timeframe {
+        params.ban_timeframe = val;
+    }
+    if let Some(val) = args.ban_time {
+        params.ban_time = val;
+    }
+    if let Some(val) = args.ban_successful {
+        params.ban_successful = val;
+    }
+    if let Some(val) = args.database {
+        params.database = val;
+    }
+    if let Some(val) = args.sqlite_wal {
+        params.sqlite_wal = val;
+    }
+    if let Some(val) = args.db_driver {
+        params.db_driver = val;
+    }
+    if let Some(val) = args.db_username {
+        params.db_username = val;
+    }
+    if let Some(val) = args.db_password {
+        params.db_password = val;
+    }
+    if let Some(val) = args.db_hostname {
+        params.db_hostname = val;
+    }
+    if let Some(val) = args.db_prefix {
+        params.db_prefix = val;
+    }
+    if let Some(val) = args.db_opts {
+        params.db_opts = val;
+    }
+    if let Some(val) = args.db_port {
+        params.db_port = val;
+    }
+    if let Some(val) = args.log_days {
+        params.log_days = val;
+    }
+    if let Some(val) = args.obfuscate {
+        params.obfuscate = val;
+    }
+    if let Some(val) = args.send_version {
+        params.send_version = val;
+    }
+    if let Some(val) = args.allow_ping {
+        params.allow_ping = val;
+    }
+    if let Some(val) = args.logfile {
+        params.logfile = val;
+    }
+    if let Some(val) = args.pid_file {
+        params.pid_file = val;
+    }
+    if let Some(val) = args.ice_endpoint {
+        params.ice_endpoint = val;
+    }
+    if let Some(val) = args.ice_secret_read {
+        params.ice_secret_read = val;
+    }
+    if let Some(val) = args.ice_secret_write {
+        params.ice_secret_write = val;
+    }
+    if let Some(val) = args.reg_name {
+        params.reg_name = val;
+    }
+    if let Some(val) = args.reg_password {
+        params.reg_password = val;
+    }
+    if let Some(val) = args.reg_host {
+        params.reg_host = val;
+    }
+    if let Some(val) = args.reg_location {
+        params.reg_location = val;
+    }
+    if let Some(val) = args.reg_web_url {
+        params.reg_web_url = val;
+    }
+    if let Some(val) = args.bonjour {
+        params.bonjour = val;
+    }
+    if let Some(val) = args.message_limit {
+        params.message_limit = val;
+    }
+    if let Some(val) = args.message_burst {
+        params.message_burst = val;
+    }
+    if let Some(val) = args.plugin_message_limit {
+        params.plugin_message_limit = val;
+    }
+    if let Some(val) = args.plugin_message_burst {
+        params.plugin_message_burst = val;
+    }
+    if let Some(val) = args.broadcast_listener_volume_adjustments {
+        params.broadcast_listener_volume_adjustments = val;
+    }
+    if let Some(val) = args.ciphers {
+        params.ciphers = val;
+    }
+    if let Some(val) = args.suggest_positional {
+        params.suggest_positional = Some(val);
+    }
+    if let Some(val) = args.suggest_push_to_talk {
+        params.suggest_push_to_talk = Some(val);
+    }
+    if let Some(val) = args.log_group_changes {
+        params.log_group_changes = val;
+    }
+    if let Some(val) = args.log_acl_changes {
+        params.log_acl_changes = val;
+    }
+    if let Some(val) = args.allow_recording {
+        params.allow_recording = val;
+    }
+    if let Some(val) = args.rolling_stats_window {
+        params.rolling_stats_window = val;
+    }
+    if let Some(val) = args.abs_settings_file_path {
+        params.abs_settings_file_path = val;
+    }
+    if let Some(val) = args.ssl_cert {
+        params.ssl_cert = val;
+    }
+    if let Some(val) = args.ssl_key {
+        params.ssl_key = val;
+    }
 
     Config {
         params,

@@ -2,52 +2,63 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-use tokio_rustls::TlsAcceptor;
-use rustls::ServerConfig;
-use rustls::pki_types::PrivateKeyDer;
-use std::sync::{Arc, Mutex};
-use anyhow::{Result, anyhow};
-use rusqlite::Connection as SqliteConnection;
-use std::collections::HashMap;
-use tokio::net::TcpListener;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use log::{info, error, LevelFilter};
-use env_logger::Builder;
-use std::io::Write;
-use std::thread;
-use tokio::signal::unix::{signal, SignalKind};
-use mumble::config::{MetaParams, DbConnectionParameter};
-use mumble::cli;
-use mumble::tui::Tui;
-use rcgen::{generate_simple_self_signed, CertificateParams, DistinguishedName, KeyPair, PKCS_ED25519};
+use anyhow::{anyhow, Result};
 use ed25519_dalek::SigningKey;
+use env_logger::Builder;
+use log::{error, info, LevelFilter};
+use mumble::cli;
+use mumble::config::{DbConnectionParameter, MetaParams};
+use mumble::tui::Tui;
 use pkcs8::EncodePrivateKey;
+use rcgen::{
+    generate_simple_self_signed, CertificateParams, DistinguishedName, KeyPair, PKCS_ED25519,
+};
+use rusqlite::Connection as SqliteConnection;
+use rustls::pki_types::PrivateKeyDer;
+use rustls::ServerConfig;
+use std::collections::HashMap;
+use std::io::Write;
+use std::sync::{Arc, Mutex};
+use std::thread;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::TcpListener;
+use tokio::signal::unix::{signal, SignalKind};
+use tokio_rustls::TlsAcceptor;
 
 fn generate_cert(cert_path: &str, key_path: &str, hash_seed: Option<&str>) -> Result<()> {
     if let Some(hash) = hash_seed {
         info!("Generating certificate from SHA256 hash...");
         let seed_bytes = hex::decode(hash)?;
         if seed_bytes.len() != 32 {
-            return Err(anyhow!("SHA256 hash must be 32 bytes (64 hex characters) long."));
+            return Err(anyhow!(
+                "SHA256 hash must be 32 bytes (64 hex characters) long."
+            ));
         }
         let seed_array: [u8; 32] = seed_bytes.try_into().unwrap();
         let secret_key = SigningKey::from_bytes(&seed_array);
-        let pkcs8_der = secret_key.to_pkcs8_der()
+        let pkcs8_der = secret_key
+            .to_pkcs8_der()
             .map_err(|e| anyhow!("Failed to create PKCS#8 DER from secret key: {}", e))?;
 
-        let key_pair = KeyPair::from_der_and_sign_algo(&PrivateKeyDer::Pkcs8(pkcs8_der.as_bytes().into()), &PKCS_ED25519)?;
+        let key_pair = KeyPair::from_der_and_sign_algo(
+            &PrivateKeyDer::Pkcs8(pkcs8_der.as_bytes().into()),
+            &PKCS_ED25519,
+        )?;
         let mut params = CertificateParams::new(vec!["localhost".to_string()])?;
         let mut dn = DistinguishedName::new();
         dn.push(rcgen::DnType::CommonName, "localhost");
         params.distinguished_name = dn;
-        
+
         let cert = params.self_signed(&key_pair)?;
         let cert_pem = cert.pem();
         let key_pem = key_pair.serialize_pem();
-        
+
         std::fs::write(cert_path, cert_pem)?;
         std::fs::write(key_path, key_pem)?;
-        info!("Certificate and key saved to {} and {}", cert_path, key_path);
+        info!(
+            "Certificate and key saved to {} and {}",
+            cert_path, key_path
+        );
         return Ok(());
     }
 
@@ -58,7 +69,10 @@ fn generate_cert(cert_path: &str, key_path: &str, hash_seed: Option<&str>) -> Re
     let key_pem = cert.signing_key.serialize_pem();
     std::fs::write(cert_path, cert_pem)?;
     std::fs::write(key_path, key_pem)?;
-    info!("Certificate and key saved to {} and {}", cert_path, key_path);
+    info!(
+        "Certificate and key saved to {} and {}",
+        cert_path, key_path
+    );
     Ok(())
 }
 
@@ -77,7 +91,10 @@ impl Server {
     }
 
     pub fn initialize_cert(&self) {
-        info!("Server {}: Initializing certificates (placeholder).", self.id);
+        info!(
+            "Server {}: Initializing certificates (placeholder).",
+            self.id
+        );
     }
 
     pub fn log(&self, message: &str) {
@@ -104,27 +121,38 @@ impl Meta {
     // Placeholder for dbWrapper.getBootServers()
     fn get_boot_servers(&self) -> Result<Vec<u32>> {
         // For now, return an empty vector, or a default server ID if no servers exist
-        let mut stmt = self.db_connection.prepare("SELECT server_id FROM servers WHERE boot = 1")?;
-        let server_ids = stmt.query_map([], |row| row.get(0))?.filter_map(|id| id.ok()).collect();
+        let mut stmt = self
+            .db_connection
+            .prepare("SELECT server_id FROM servers WHERE boot = 1")?;
+        let server_ids = stmt
+            .query_map([], |row| row.get(0))?
+            .filter_map(|id| id.ok())
+            .collect();
         Ok(server_ids)
     }
 
     // Placeholder for dbWrapper.addServer()
     fn add_server(&mut self) -> Result<u32> {
-        self.db_connection.execute("INSERT INTO servers (boot) VALUES (0)", [])?;
+        self.db_connection
+            .execute("INSERT INTO servers (boot) VALUES (0)", [])?;
         Ok(self.db_connection.last_insert_rowid() as u32)
     }
 
     // Placeholder for dbWrapper.setServerBootProperty()
     fn set_server_boot_property(&self, server_id: u32, boot: bool) -> Result<()> {
         let boot_val = if boot { 1 } else { 0 };
-        self.db_connection.execute("UPDATE servers SET boot = ?1 WHERE server_id = ?2", &[&boot_val, &(server_id as i64)])?;
+        self.db_connection.execute(
+            "UPDATE servers SET boot = ?1 WHERE server_id = ?2",
+            &[&boot_val, &(server_id as i64)],
+        )?;
         Ok(())
     }
 
     // Placeholder for dbWrapper.serverExists()
     fn server_exists(&self, server_id: u32) -> Result<bool> {
-        let mut stmt = self.db_connection.prepare("SELECT COUNT(*) FROM servers WHERE server_id = ?1")?;
+        let mut stmt = self
+            .db_connection
+            .prepare("SELECT COUNT(*) FROM servers WHERE server_id = ?1")?;
         let count: i64 = stmt.query_row([server_id as i64], |row| row.get(0))?;
         Ok(count > 0)
     }
@@ -190,19 +218,22 @@ impl Meta {
                                 Ok(0) => {
                                     info!("Client {} disconnected.", peer_addr);
                                     break;
-                                },
+                                }
                                 Ok(n) => {
                                     let msg = String::from_utf8_lossy(&buf[..n]);
                                     info!("Received from {}: {}", peer_addr, msg);
-                                    stream.write_all(b"ACK").await.expect("Failed to write to stream");
-                                },
+                                    stream
+                                        .write_all(b"ACK")
+                                        .await
+                                        .expect("Failed to write to stream");
+                                }
                                 Err(e) => {
                                     error!("Error reading from {}: {}", peer_addr, e);
                                     break;
                                 }
                             }
                         }
-                    },
+                    }
                     Err(e) => {
                         error!("TLS handshake failed with {}: {}", peer_addr, e);
                     }
@@ -250,11 +281,14 @@ async fn main() -> Result<()> {
     if config.tui {
         let log_messages_clone = Arc::clone(&log_messages);
         let mut builder = Builder::new();
-        builder.format(move |buf, record| {
-            let msg = format!("[{}] {}", record.level(), record.args());
-            log_messages_clone.lock().unwrap().push(msg.clone());
-            writeln!(buf, "{}", msg)
-        }).filter(None, LevelFilter::Info).init();
+        builder
+            .format(move |buf, record| {
+                let msg = format!("[{}] {}", record.level(), record.args());
+                log_messages_clone.lock().unwrap().push(msg.clone());
+                writeln!(buf, "{}", msg)
+            })
+            .filter(None, LevelFilter::Info)
+            .init();
 
         thread::spawn(move || {
             let mut tui = Tui::new(Arc::clone(&log_messages)).unwrap();
@@ -277,26 +311,35 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    info!("Server configured with port: {} and welcome text: {}", params.port, params.welcome_text);
+    info!(
+        "Server configured with port: {} and welcome text: {}",
+        params.port, params.welcome_text
+    );
 
     // Load SSL/TLS certificate and key from files
     if cert_file.is_empty() || key_file.is_empty() {
-        return Err(anyhow!("'sslCert' and 'sslKey' must be set in the config file or via command line arguments."));
+        return Err(anyhow!(
+            "'sslCert' and 'sslKey' must be set in the config file or via command line arguments."
+        ));
     }
 
     if !std::path::Path::new(&cert_file).exists() || !std::path::Path::new(&key_file).exists() {
         return Err(anyhow!("Certificate or key file not found. Use --generate-cert or --generate-keys to create them."));
     }
 
-    let certs = rustls_pemfile::certs(&mut std::io::BufReader::new(std::fs::File::open(&cert_file)
-        .map_err(|e| anyhow!("Failed to open cert file '{}': {}", &cert_file, e))?))
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| anyhow!("Failed to parse cert file '{}': {}", &cert_file, e))?;
+    let certs = rustls_pemfile::certs(&mut std::io::BufReader::new(
+        std::fs::File::open(&cert_file)
+            .map_err(|e| anyhow!("Failed to open cert file '{}': {}", &cert_file, e))?,
+    ))
+    .collect::<Result<Vec<_>, _>>()
+    .map_err(|e| anyhow!("Failed to parse cert file '{}': {}", &cert_file, e))?;
 
-    let mut keys = rustls_pemfile::pkcs8_private_keys(&mut std::io::BufReader::new(std::fs::File::open(&key_file)
-        .map_err(|e| anyhow!("Failed to open key file '{}': {}", &key_file, e))?))
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|e| anyhow!("Failed to parse key file '{}': {}", &key_file, e))?;
+    let mut keys = rustls_pemfile::pkcs8_private_keys(&mut std::io::BufReader::new(
+        std::fs::File::open(&key_file)
+            .map_err(|e| anyhow!("Failed to open key file '{}': {}", &key_file, e))?,
+    ))
+    .collect::<Result<Vec<_>, _>>()
+    .map_err(|e| anyhow!("Failed to parse key file '{}': {}", &key_file, e))?;
 
     let key = if let Some(k) = keys.pop() {
         k
@@ -315,25 +358,27 @@ async fn main() -> Result<()> {
     info!("SSL/TLS initialized.");
 
     // Get database connection parameters
-    let db_connection_param = get_db_connection_parameter(&params).expect("Failed to get DB connection parameters");
+    let db_connection_param =
+        get_db_connection_parameter(&params).expect("Failed to get DB connection parameters");
 
     // Establish database connection
     let db_connection = match db_connection_param {
         DbConnectionParameter::SQLite { path, use_wal } => {
             let conn = SqliteConnection::open(&path).expect("Failed to open SQLite database");
             if use_wal {
-                conn.execute("PRAGMA journal_mode = WAL", []).expect("Failed to set WAL mode");
+                conn.execute("PRAGMA journal_mode = WAL", [])
+                    .expect("Failed to set WAL mode");
             }
             conn
-        },
+        }
         DbConnectionParameter::MySQL { .. } => {
             // TODO: Implement MySQL connection
             panic!("MySQL not yet implemented");
-        },
+        }
         DbConnectionParameter::PostgreSQL { .. } => {
             // TODO: Implement PostgreSQL connection
             panic!("PostgreSQL not yet implemented");
-        },
+        }
     };
 
     // Initialize Meta

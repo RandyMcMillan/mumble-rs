@@ -21,5 +21,7 @@ fn test_missing_ssl_error() {
         .expect("failed to execute process");
 
     let error_msg_str = String::from_utf8_lossy(&output.stderr);
-    assert!(error_msg_str.contains("'sslCert' and 'sslKey' must be set in the config file or via command line arguments."));
+    assert!(error_msg_str.contains(
+        "'sslCert' and 'sslKey' must be set in the config file or via command line arguments."
+    ));
 }

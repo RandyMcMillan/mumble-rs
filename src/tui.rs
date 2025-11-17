@@ -25,7 +25,10 @@ impl Tui {
         enable_raw_mode()?;
         execute!(stdout(), EnterAlternateScreen)?;
         terminal.clear()?;
-        Ok(Self { terminal, log_messages })
+        Ok(Self {
+            terminal,
+            log_messages,
+        })
     }
 
     pub fn run(&mut self) -> io::Result<()> {

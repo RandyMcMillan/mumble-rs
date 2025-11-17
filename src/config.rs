@@ -1,12 +1,31 @@
+use anyhow::{anyhow, Result};
 use configparser::ini::Ini;
-use anyhow::{Result, anyhow};
 
 // Enum to represent different database connection parameters
 #[derive(Debug)]
 pub enum DbConnectionParameter {
-    SQLite { path: String, use_wal: bool },
-    MySQL { db_name: String, username: String, password: String, host: String, port: u16, prefix: String, opts: String },
-    PostgreSQL { db_name: String, username: String, password: String, host: String, port: u16, prefix: String, opts: String },
+    SQLite {
+        path: String,
+        use_wal: bool,
+    },
+    MySQL {
+        db_name: String,
+        username: String,
+        password: String,
+        host: String,
+        port: u16,
+        prefix: String,
+        opts: String,
+    },
+    PostgreSQL {
+        db_name: String,
+        username: String,
+        password: String,
+        host: String,
+        port: u16,
+        prefix: String,
+        opts: String,
+    },
 }
 
 // Equivalent to C++ MetaParams
@@ -159,7 +178,9 @@ impl Default for MetaParams {
 
 pub fn read_config(file_path: &str) -> Result<MetaParams> {
     let mut config_parser = Ini::new();
-    config_parser.read(file_path.to_string()).map_err(|e| anyhow!("Failed to read INI file: {}", e))?;
+    config_parser
+        .read(file_path.to_string())
+        .map_err(|e| anyhow!("Failed to read INI file: {}", e))?;
 
     let mut params = MetaParams::default();
 
@@ -169,19 +190,38 @@ pub fn read_config(file_path: &str) -> Result<MetaParams> {
     }
 
     fn get_i32(parser: &Ini, key: &str, default: i32) -> i32 {
-        parser.getint("General", key).ok().flatten().map(|v| v as i32).unwrap_or(default)
+        parser
+            .getint("General", key)
+            .ok()
+            .flatten()
+            .map(|v| v as i32)
+            .unwrap_or(default)
     }
-    
+
     fn get_u32(parser: &Ini, key: &str, default: u32) -> u32 {
-        parser.getint("General", key).ok().flatten().map(|v| v as u32).unwrap_or(default)
+        parser
+            .getint("General", key)
+            .ok()
+            .flatten()
+            .map(|v| v as u32)
+            .unwrap_or(default)
     }
 
     fn get_u16(parser: &Ini, key: &str, default: u16) -> u16 {
-        parser.getint("General", key).ok().flatten().map(|v| v as u16).unwrap_or(default)
+        parser
+            .getint("General", key)
+            .ok()
+            .flatten()
+            .map(|v| v as u16)
+            .unwrap_or(default)
     }
 
     fn get_bool(parser: &Ini, key: &str, default: bool) -> bool {
-        parser.getbool("General", key).ok().flatten().unwrap_or(default)
+        parser
+            .getbool("General", key)
+            .ok()
+            .flatten()
+            .unwrap_or(default)
     }
 
     params.port = get_u16(&config_parser, "port", params.port);
@@ -200,7 +240,11 @@ pub fn read_config(file_path: &str) -> Result<MetaParams> {
     params.sqlite_wal = get_i32(&config_parser, "sqlite_wal", params.sqlite_wal);
     params.timeout = get_i32(&config_parser, "timeout", params.timeout);
     params.max_bandwidth = get_i32(&config_parser, "bandwidth", params.max_bandwidth);
-    params.max_users_per_channel = get_u32(&config_parser, "usersperchannel", params.max_users_per_channel);
+    params.max_users_per_channel = get_u32(
+        &config_parser,
+        "usersperchannel",
+        params.max_users_per_channel,
+    );
     params.password = get_string(&config_parser, "password", params.password);
     params.allow_html = get_bool(&config_parser, "allowhtml", params.allow_html);
     params.remember_channel = get_bool(&config_parser, "rememberchannel", params.remember_channel);
