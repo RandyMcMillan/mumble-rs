@@ -8,3 +8,13 @@ crate-type = ["cdylib"]
 
 [dependencies]
 mumble-sys = { path = "./mumble-sys" }
+tokio = { version = "1", features = ["full"] }
+configparser = "1.0.0"
+anyhow = "1.0"
+rusqlite = "0.31"
+tokio-rustls = "0.26"
+rustls = "0.23"
+
+[[bin]]
+name = "mumble-server"
+path = "src/bin/mumble-server.rs"
