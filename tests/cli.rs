@@ -28,6 +28,7 @@ fn test_missing_ssl_error() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn test_deterministic_key_generation() {
     let temp_dir = tempfile::tempdir().unwrap();
     let cert_path = temp_dir.path().join("mumble-server.pem");
