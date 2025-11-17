@@ -19,9 +19,38 @@ use tokio::signal::unix::{signal, SignalKind};
 use mumble::config::{MetaParams, DbConnectionParameter};
 use mumble::cli;
 use mumble::tui::Tui;
-use rcgen::generate_simple_self_signed;
+use rcgen::{generate_simple_self_signed, Certificate, CertificateParams, DistinguishedName, KeyPair, PKCS_ED25519};
+use ed25519_dalek::SigningKey;
+use pkcs8::{EncodePrivateKey, LineEnding};
 
-fn generate_cert(cert_path: &str, key_path: &str) -> Result<()> {
+fn generate_cert(cert_path: &str, key_path: &str, hash_seed: Option<&str>) -> Result<()> {
+    if let Some(hash) = hash_seed {
+        info!("Generating certificate from SHA256 hash...");
+        let seed_bytes = hex::decode(hash)?;
+        if seed_bytes.len() != 32 {
+            return Err(anyhow!("SHA256 hash must be 32 bytes (64 hex characters) long."));
+        }
+        let seed_array: [u8; 32] = seed_bytes.try_into().unwrap();
+        let secret_key = SigningKey::from_bytes(&seed_array);
+        let pkcs8_der = secret_key.to_pkcs8_der()
+            .map_err(|e| anyhow!("Failed to create PKCS#8 DER from secret key: {}", e))?;
+
+        let key_pair = KeyPair::from_der_and_sign_algo(&PrivateKeyDer::Pkcs8(pkcs8_der.as_bytes().into()), &PKCS_ED25519)?;
+        let mut params = CertificateParams::new(vec!["localhost".to_string()])?;
+        let mut dn = DistinguishedName::new();
+        dn.push(rcgen::DnType::CommonName, "localhost");
+        params.distinguished_name = dn;
+        
+        let cert = params.self_signed(&key_pair)?;
+        let cert_pem = cert.pem();
+        let key_pem = key_pair.serialize_pem();
+        
+        std::fs::write(cert_path, cert_pem)?;
+        std::fs::write(key_path, key_pem)?;
+        info!("Certificate and key saved to {} and {}", cert_path, key_path);
+        return Ok(());
+    }
+
     info!("Generating new self-signed certificate...");
     let subject_alt_names = vec!["localhost".to_string()];
     let cert = generate_simple_self_signed(subject_alt_names)?;
@@ -240,11 +269,11 @@ async fn main() -> Result<()> {
     let cert_file = params.ssl_cert.clone();
     let key_file = params.ssl_key.clone();
 
-    if config.generate_cert {
+    if config.generate_cert || config.generate_keys {
         if cert_file.is_empty() || key_file.is_empty() {
             return Err(anyhow!("'sslCert' and 'sslKey' must be set in the config file or via command line arguments to generate a certificate."));
         }
-        generate_cert(&cert_file, &key_file)?;
+        generate_cert(&cert_file, &key_file, config.key_from_hash.as_deref())?;
         return Ok(());
     }
 
@@ -256,7 +285,7 @@ async fn main() -> Result<()> {
     }
 
     if !std::path::Path::new(&cert_file).exists() || !std::path::Path::new(&key_file).exists() {
-        return Err(anyhow!("Certificate or key file not found. Use --generate-cert to create them."));
+        return Err(anyhow!("Certificate or key file not found. Use --generate-cert or --generate-keys to create them."));
     }
 
     let certs = rustls_pemfile::certs(&mut std::io::BufReader::new(std::fs::File::open(&cert_file)

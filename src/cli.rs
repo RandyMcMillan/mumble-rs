@@ -154,18 +154,30 @@ struct Args {
     /// Generate a new self-signed certificate and key
     #[arg(long)]
     generate_cert: bool,
+
+    /// Generate a new self-signed certificate and key
+    #[arg(long)]
+    generate_keys: bool,
+
+    /// Generate key from a SHA256 hash (hex string)
+    #[arg(long)]
+    key_from_hash: Option<String>,
 }
 
 pub struct Config {
     pub params: MetaParams,
     pub tui: bool,
     pub generate_cert: bool,
+    pub generate_keys: bool,
+    pub key_from_hash: Option<String>,
 }
 
 pub fn load_and_merge_config() -> Config {
     let args = Args::parse();
     let tui = args.tui;
     let generate_cert = args.generate_cert;
+    let generate_keys = args.generate_keys;
+    let key_from_hash = args.key_from_hash;
 
     // Load configuration from file, or use defaults if file is not found or invalid
     let mut params = read_config(&args.config).unwrap_or_else(|e| {
@@ -247,5 +259,7 @@ pub fn load_and_merge_config() -> Config {
         params,
         tui,
         generate_cert,
+        generate_keys,
+        key_from_hash,
     }
 }

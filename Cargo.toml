@@ -16,9 +16,13 @@ clap = { version = "4.5.20", features = ["derive", "env", "cargo"] }
 configparser = "1.0.0"
 crossbeam-channel = "0.5"
 crossterm = { version = "0.28.0", features = ["event-stream", "serde"] }
+ed25519-dalek = { version = "2.2.0", features = ["pkcs8"] }
 env_logger = "0.11"
+hex = "0.4.3"
 log = "0.4"
 mumble-sys = { path = "./mumble-sys" }
+pem = "3.0.6"
+pkcs8 = { version = "0.10.2", features = ["pem"] }
 ratatui = { version = "0.28", default-features = false, features = [
     'crossterm',
     'serde',
