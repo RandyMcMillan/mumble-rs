@@ -5,17 +5,20 @@
 use tokio_rustls::TlsAcceptor;
 use rustls::ServerConfig;
 use rustls::pki_types::PrivateKeyDer;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use anyhow::{Result, anyhow};
 use rusqlite::Connection as SqliteConnection;
 use std::collections::HashMap;
 use tokio::net::TcpListener;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use log::{info, error};
-use env_logger;
+use log::{info, error, LevelFilter};
+use env_logger::Builder;
+use std::io::Write;
+use std::thread;
 use tokio::signal::unix::{signal, SignalKind};
 use mumble::config::{MetaParams, DbConnectionParameter};
 use mumble::cli;
+use mumble::tui::Tui;
 
 // Placeholder for the Server struct
 pub struct Server {
@@ -197,11 +200,29 @@ fn get_db_connection_parameter(params: &MetaParams) -> Result<DbConnectionParame
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env_logger::init();
-    info!("Starting Mumble server...");
-
     let config = cli::load_and_merge_config();
     let params = config.params;
+
+    let log_messages = Arc::new(Mutex::new(Vec::new()));
+
+    if config.tui {
+        let log_messages_clone = Arc::clone(&log_messages);
+        let mut builder = Builder::new();
+        builder.format(move |buf, record| {
+            let msg = format!("[{}] {}", record.level(), record.args());
+            log_messages_clone.lock().unwrap().push(msg.clone());
+            writeln!(buf, "{}", msg)
+        }).filter(None, LevelFilter::Info).init();
+
+        thread::spawn(move || {
+            let mut tui = Tui::new(Arc::clone(&log_messages)).unwrap();
+            tui.run().unwrap();
+        });
+    } else {
+        env_logger::init();
+    }
+
+    info!("Starting Mumble server...");
 
     info!("Server configured with port: {} and welcome text: {}", params.port, params.welcome_text);
 
