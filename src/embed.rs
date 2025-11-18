@@ -38,13 +38,14 @@ pub async fn run_embedded_server(
     let log_buffer_clone = Arc::clone(&log_buffer);
     let mut builder = Builder::new();
     builder
-        .format(move |buf, record| {
+        .format(move |_buf, record| {
             let msg = format!("[{}] {}", record.level(), record.args());
-            log_buffer_clone.lock().unwrap().push(msg.clone());
-            writeln!(buf, "{}", msg) // Also write to stdout for debugging
+            log_buffer_clone.lock().unwrap().push(msg);
+            Ok(())
         })
         .filter(None, LevelFilter::Info) // Or use config.logging
-        .init();
+        .try_init()
+        .ok(); // Ignore error if logger is already set (e.g. in tests)
 
     if params.ssl_cert.is_empty() {
         params.ssl_cert = "mumble-server.pem".to_string();
