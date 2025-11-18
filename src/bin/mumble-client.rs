@@ -1,6 +1,6 @@
 use anyhow::Result;
 use mumble::{
-    cli, embed, lan,
+    embed, lan,
     ui::client::{LocalServerState, ServerCommand, Tui},
 };
 use tokio::{
@@ -12,8 +12,7 @@ async fn start_server_task(
 ) -> (task::JoinHandle<Result<()>>, oneshot::Sender<()>) {
     let (shutdown_tx, shutdown_rx) = oneshot::channel();
     let handle = task::spawn(async move {
-        let config = cli::load_and_merge_config();
-        embed::run_embedded_server(config, shutdown_rx).await
+        embed::run_embedded_server(shutdown_rx).await
     });
     (handle, shutdown_tx)
 }

@@ -1,3 +1,7 @@
+use crate::cli;
+use crate::config::{DbConnectionParameter, MetaParams};
+use crate::db;
+use crate::server::Meta;
 use anyhow::{anyhow, Result};
 use log::info;
 use rusqlite::Connection as SqliteConnection;
@@ -6,11 +10,6 @@ use rustls::ServerConfig;
 use std::sync::Arc;
 use tokio::sync::oneshot;
 use tokio_rustls::TlsAcceptor;
-
-use crate::cli::Config;
-use crate::config::{DbConnectionParameter, MetaParams};
-use crate::db;
-use crate::server::Meta;
 
 fn get_db_connection_parameter(params: &MetaParams) -> Result<DbConnectionParameter> {
     match params.db_driver.as_str() {
@@ -26,10 +25,9 @@ fn get_db_connection_parameter(params: &MetaParams) -> Result<DbConnectionParame
 ///
 /// This function encapsulates the entire server startup and execution logic.
 /// It takes a `shutdown_rx` channel to allow for graceful termination.
-pub async fn run_embedded_server(
-    config: Config,
-    mut shutdown_rx: oneshot::Receiver<()>,
-) -> Result<()> {
+pub async fn run_embedded_server(mut shutdown_rx: oneshot::Receiver<()>) -> Result<()> {
+    // Config loading and Meta initialization now happens *inside* this task.
+    let config = cli::load_and_merge_config();
     let mut params = config.params;
 
     // Default certificate paths for embedded server
