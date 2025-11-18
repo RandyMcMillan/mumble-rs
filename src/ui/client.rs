@@ -184,32 +184,45 @@ impl Drop for Tui {
 }
 
 fn ui(frame: &mut Frame, app_state: &AppState) {
-    let main_layout = Layout::default()
+    // Create a top-level horizontal layout (Left 30%, Right 70%)
+    let top_level_layout = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(30), Constraint::Percentage(70)])
+        .split(frame.area());
+
+    let left_pane = top_level_layout[0];
+    let right_pane = top_level_layout[1];
+
+    // Split the left pane vertically for the local server and server list
+    let left_pane_layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(5),
-            Constraint::Min(0),
-            Constraint::Length(5),
+            Constraint::Length(5), // Fixed height for local server widget
+            Constraint::Min(0),    // Remaining space for server list
         ])
-        .split(frame.area());
+        .split(left_pane);
 
     let local_server_widget = local_server::render(
         &app_state.local_server_state,
         app_state.focused_widget == FocusedWidget::LocalServer,
     );
-    frame.render_widget(local_server_widget, main_layout[0]);
-
-    let main_content_layout = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(30), Constraint::Percentage(70)])
-        .split(main_layout[1]);
+    frame.render_widget(local_server_widget, left_pane_layout[0]);
 
     let server_list = servers::render_server_list(
         &app_state.servers,
         app_state.focused_widget == FocusedWidget::ServerList,
         app_state.selected_server,
     );
-    frame.render_widget(server_list, main_content_layout[0]);
+    frame.render_widget(server_list, left_pane_layout[1]);
+
+    // Split the right pane for content and client log
+    let right_pane_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Min(0),    // Main content view
+            Constraint::Length(5), // Client log at the bottom
+        ])
+        .split(right_pane);
 
     match app_state.current_view {
         CurrentView::Chat => {
@@ -225,7 +238,7 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
                         }),
                 )
                 .scroll((app_state.content_scroll as u16, 0));
-            frame.render_widget(chat_widget, main_content_layout[1]);
+            frame.render_widget(chat_widget, right_pane_layout[0]);
         }
         CurrentView::LocalServerLog => {
             let log_view = log_view::render(
@@ -233,12 +246,12 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
                 app_state.focused_widget == FocusedWidget::Content,
                 app_state.content_scroll,
             );
-            frame.render_widget(log_view, main_content_layout[1]);
+            frame.render_widget(log_view, right_pane_layout[0]);
         }
     }
 
     let log_pane = render_log_pane(app_state);
-    frame.render_widget(log_pane, main_layout[2]);
+    frame.render_widget(log_pane, right_pane_layout[1]);
 }
 
 fn render_log_pane<'a>(app_state: &'a AppState) -> Paragraph<'a> {
