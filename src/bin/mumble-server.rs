@@ -10,7 +10,6 @@ use mumble::cli;
 use mumble::config::{DbConnectionParameter, MetaParams};
 use mumble::db;
 use mumble::server::Meta;
-use mumble::ui::Tui;
 use pkcs8::EncodePrivateKey;
 use rcgen::{
     generate_simple_self_signed, CertificateParams, DistinguishedName, KeyPair, PKCS_ED25519,
@@ -18,8 +17,7 @@ use rcgen::{
 use rusqlite::Connection as SqliteConnection;
 use rustls::pki_types::PrivateKeyDer;
 use rustls::ServerConfig;
-use std::sync::{Arc, Mutex};
-use std::thread;
+use std::sync::Arc;
 use tokio::signal::unix::{signal, SignalKind};
 use tokio_rustls::TlsAcceptor;
 
@@ -109,8 +107,6 @@ async fn main() -> Result<()> {
     let config = cli::load_and_merge_config();
     let mut params = config.params;
 
-    let log_messages = Arc::new(Mutex::new(Vec::new()));
-
     let log_level = match config.logging {
         Some(level) => match level {
             mumble::cli::LogLevel::Error => LevelFilter::Error,
@@ -122,21 +118,8 @@ async fn main() -> Result<()> {
         None => LevelFilter::Info,
     };
 
-    if config.tui {
-        let log_messages_clone = Arc::clone(&log_messages);
-        let mut builder = Builder::new();
-        builder
-            .format(move |_buf, record| {
-                let msg = format!("[{}] {}", record.level(), record.args());
-                log_messages_clone.lock().unwrap().push(msg);
-                Ok(())
-            })
-            .filter(None, log_level)
-            .init();
-    } else {
-        let mut builder = Builder::new();
-        builder.filter(None, log_level).init();
-    }
+    let mut builder = Builder::new();
+    builder.filter(None, log_level).init();
 
     if config.generate_cert || config.generate_keys {
         let mut cert_file = params.ssl_cert.clone();
@@ -248,33 +231,15 @@ async fn main() -> Result<()> {
     let mut sigint = signal(SignalKind::interrupt())?;
     let mut sigterm = signal(SignalKind::terminate())?;
 
-    if config.tui {
-        let tui_log_messages = Arc::clone(&log_messages);
-        thread::spawn(move || {
-            let mut tui = Tui::new(tui_log_messages).unwrap();
-            tui.run().unwrap();
-        });
-
-        // Block the main thread in TUI mode until a shutdown signal is received
-        tokio::select! {
-            _ = sigint.recv() => {
-                info!("SIGINT received, shutting down gracefully...");
-            }
-            _ = sigterm.recv() => {
-                info!("SIGTERM received, shutting down gracefully...");
-            }
+    tokio::select! {
+        _ = meta.start_server(acceptor) => {
+            info!("Server stopped unexpectedly.");
         }
-    } else {
-        tokio::select! {
-            _ = meta.start_server(acceptor) => {
-                info!("Server stopped unexpectedly.");
-            }
-            _ = sigint.recv() => {
-                info!("SIGINT received, shutting down gracefully...");
-            }
-            _ = sigterm.recv() => {
-                info!("SIGTERM received, shutting down gracefully...");
-            }
+        _ = sigint.recv() => {
+            info!("SIGINT received, shutting down gracefully...");
+        }
+        _ = sigterm.recv() => {
+            info!("SIGTERM received, shutting down gracefully...");
         }
     }
 
