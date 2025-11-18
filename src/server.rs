@@ -1,47 +1,51 @@
-use crate::config::MetaParams;
+use crate::config::{MetaParams, ServerParams};
 use anyhow::{anyhow, Result};
-use rusqlite::Connection as SqliteConnection;
+use log::{info, warn};
 use std::collections::HashMap;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::net::TcpListener;
+use tokio::net::{TcpListener, TcpStream};
 use tokio_rustls::TlsAcceptor;
-use log::{error, info};
+use tokio_rusqlite::Connection as TokioConnection;
 
-// Placeholder for the Server struct
 pub struct Server {
-    pub id: u32,
-    pub is_valid: bool,
-    // Add other server-specific fields here
+    pub params: ServerParams,
 }
 
 impl Server {
-    pub fn new(id: u32) -> Self {
-        // In a real implementation, this would load server configuration from DB
-        // and perform validation.
-        Self { id, is_valid: true }
+    pub fn new(params: ServerParams) -> Self {
+        Self { params }
     }
 
-    pub fn initialize_cert(&self) {
-        info!(
-            "Server {}: Initializing certificates (placeholder).",
-            self.id
-        );
-    }
+    pub async fn run(&self, acceptor: TlsAcceptor) -> Result<()> {
+        let addr = format!("0.0.0.0:{}", self.params.port);
+        let listener = TcpListener::bind(&addr).await?;
+        info!("Server listening on {}", addr);
 
-    pub fn log(&self, message: &str) {
-        info!("Server {}: {}", self.id, message);
+        loop {
+            let (stream, _peer_addr) = listener.accept().await?;
+            let acceptor = acceptor.clone();
+            tokio::spawn(async move {
+                if let Err(err) = handle_connection(stream, acceptor).await {
+                    warn!("Connection error: {:?}", err);
+                }
+            });
+        }
     }
 }
 
-// Equivalent to C++ Meta
+async fn handle_connection(stream: TcpStream, acceptor: TlsAcceptor) -> Result<()> {
+    let _tls_stream = acceptor.accept(stream).await?;
+    // TODO: Handle Mumble protocol
+    Ok(())
+}
+
 pub struct Meta {
     pub params: MetaParams,
-    pub db_connection: SqliteConnection, // Using rusqlite for now
+    pub db_connection: TokioConnection,
     pub servers: HashMap<u32, Server>,
 }
 
 impl Meta {
-    pub fn new(params: MetaParams, db_connection: SqliteConnection) -> Self {
+    pub fn new(params: MetaParams, db_connection: TokioConnection) -> Self {
         Self {
             params,
             db_connection,
@@ -49,127 +53,60 @@ impl Meta {
         }
     }
 
-    // Placeholder for dbWrapper.getBootServers()
-    fn get_boot_servers(&self) -> Result<Vec<u32>> {
-        // For now, return an empty vector, or a default server ID if no servers exist
-        let mut stmt = self
-            .db_connection
-            .prepare("SELECT server_id FROM servers WHERE boot = 1")?;
-        let server_ids = stmt
-            .query_map([], |row| row.get(0))?
-            .filter_map(|id| id.ok())
-            .collect();
-        Ok(server_ids)
-    }
+    pub async fn boot_all(&mut self, boot: bool) -> Result<()> {
+        if boot {
+            let server_ids: Vec<u32> = self.db_connection.call(|conn| {
+                let mut stmt = conn.prepare("SELECT server_id FROM servers WHERE boot = 1")?;
+                let ids = stmt.query_map([], |row| row.get(0))?.collect::<Result<Vec<u32>, _>>()?;
+                Ok(ids)
+            }).await?;
 
-    // Placeholder for dbWrapper.addServer()
-    fn add_server(&mut self) -> Result<u32> {
-        self.db_connection
-            .execute("INSERT INTO servers (boot) VALUES (0)", [])?;
-        Ok(self.db_connection.last_insert_rowid() as u32)
-    }
-
-    // Placeholder for dbWrapper.setServerBootProperty()
-    fn set_server_boot_property(&self, server_id: u32, boot: bool) -> Result<()> {
-        let boot_val = if boot { 1 } else { 0 };
-        self.db_connection.execute(
-            "UPDATE servers SET boot = ?1 WHERE server_id = ?2",
-            &[&boot_val, &(server_id as i64)],
-        )?;
-        Ok(())
-    }
-
-    // Placeholder for dbWrapper.serverExists()
-    fn server_exists(&self, server_id: u32) -> Result<bool> {
-        let mut stmt = self
-            .db_connection
-            .prepare("SELECT COUNT(*) FROM servers WHERE server_id = ?1")?;
-        let count: i64 = stmt.query_row([server_id as i64], |row| row.get(0))?;
-        Ok(count > 0)
-    }
-
-    pub fn boot_all(&mut self, create_default_instance: bool) -> Result<()> {
-        let mut boot_server_ids = self.get_boot_servers()?;
-
-        if boot_server_ids.is_empty() && create_default_instance {
-            let new_server_id = self.add_server()?;
-            self.set_server_boot_property(new_server_id, true)?;
-            boot_server_ids.push(new_server_id);
-            info!("Created new server default instance: {}", new_server_id);
-        }
-
-        for current_server_id in boot_server_ids {
-            self.boot(current_server_id)?;
+            for id in server_ids {
+                self.boot(id).await?;
+            }
         }
         Ok(())
     }
 
-    pub fn boot(&mut self, srvnum: u32) -> Result<()> {
-        if self.servers.contains_key(&srvnum) {
-            info!("Server {} already running.", srvnum);
+    pub async fn add_server(&self) -> Result<u32> {
+        let id = self.db_connection.call(|conn| {
+            conn.execute("INSERT INTO servers (boot) VALUES (0)", [])?;
+            Ok(conn.last_insert_rowid() as u32)
+        }).await?;
+        Ok(id)
+    }
+
+    pub async fn is_booted(&self, srvnum: u32) -> Result<bool> {
+        let count: i64 = self.db_connection.call(move |conn| {
+            let mut stmt = conn.prepare("SELECT COUNT(*) FROM servers WHERE server_id = ?1")?;
+            let count = stmt.query_row([srvnum], |row| row.get(0))?;
+            Ok(count)
+        }).await?;
+        Ok(count > 0 && self.servers.contains_key(&srvnum))
+    }
+
+    pub async fn boot(&mut self, srvnum: u32) -> Result<()> {
+        if self.is_booted(srvnum).await? {
             return Ok(());
         }
 
-        if !self.server_exists(srvnum)? {
-            return Err(anyhow!("Server {} does not exist in database.", srvnum));
-        }
-
-        let s = Server::new(srvnum);
-        if !s.is_valid {
-            return Err(anyhow!("Server {} is not valid.", srvnum));
-        }
-
+        let params = ServerParams {
+            port: self.params.port,
+            // ... other params ...
+        };
+        let s = Server::new(params);
         self.servers.insert(srvnum, s);
-        info!("Server {} started.", srvnum);
-        // TODO: Emit started signal
-
-        // TODO: Handle rlimit for file descriptors on Unix-like systems
-
         Ok(())
     }
 
     pub async fn start_server(&self, acceptor: TlsAcceptor) -> Result<()> {
-        let addr = format!("0.0.0.0:{}", self.params.port);
-        let listener = TcpListener::bind(&addr).await?;
-        info!("Listening on {}", addr);
-
-        loop {
-            let (stream, peer_addr) = listener.accept().await?;
-            info!("New connection from: {}", peer_addr);
-
-            let acceptor = acceptor.clone();
-            tokio::spawn(async move {
-                match acceptor.accept(stream).await {
-                    Ok(mut stream) => {
-                        info!("TLS handshake successful with {}", peer_addr);
-                        // TODO: Handle Mumble protocol communication
-                        let mut buf = vec![0; 1024];
-                        loop {
-                            match stream.read(&mut buf).await {
-                                Ok(0) => {
-                                    info!("Client {} disconnected.", peer_addr);
-                                    break;
-                                }
-                                Ok(n) => {
-                                    let msg = String::from_utf8_lossy(&buf[..n]);
-                                    info!("Received from {}: {}", peer_addr, msg);
-                                    stream
-                                        .write_all(b"ACK")
-                                        .await
-                                        .expect("Failed to write to stream");
-                                }
-                                Err(e) => {
-                                    error!("Error reading from {}: {}", peer_addr, e);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    Err(e) => {
-                        error!("TLS handshake failed with {}: {}", peer_addr, e);
-                    }
-                }
-            });
+        // For now, we'll just run the first server.
+        // A real implementation would manage multiple servers.
+        if let Some(server) = self.servers.values().next() {
+            server.run(acceptor).await?;
+        } else {
+            warn!("No servers booted, nothing to start.");
         }
+        Ok(())
     }
 }
