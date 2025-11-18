@@ -8,12 +8,9 @@ use tokio::{
     task,
 };
 
-async fn start_server_task(
-) -> (task::JoinHandle<Result<()>>, oneshot::Sender<()>) {
+async fn start_server_task() -> (task::JoinHandle<Result<()>>, oneshot::Sender<()>) {
     let (shutdown_tx, shutdown_rx) = oneshot::channel();
-    let handle = task::spawn(async move {
-        embed::run_embedded_server(shutdown_rx).await
-    });
+    let handle = task::spawn(embed::run_embedded_server(shutdown_rx));
     (handle, shutdown_tx)
 }
 
@@ -26,60 +23,80 @@ async fn main() -> Result<()> {
 
     let mut server_handle: Option<task::JoinHandle<Result<()>>> = None;
     let mut shutdown_tx: Option<oneshot::Sender<()>> = None;
+    let mut stopping_handle: Option<task::JoinHandle<Result<()>>> = None;
 
     loop {
-        tui.draw()?;
-        if tui.handle_events()? {
-            break;
+        // --- Step 1: Check for and finalize any pending shutdowns ---
+        if let Some(handle) = &stopping_handle {
+            if handle.is_finished() {
+                let handle = stopping_handle.take().unwrap();
+                handle.await??; // Await is now non-blocking and cleans up the task
+
+                if tui.app_state.local_server_state == LocalServerState::Stopping {
+                    tui.app_state.local_server_state = LocalServerState::Stopped;
+                    tui.app_state.log("[INFO] Server stopped.".to_string());
+                } else if tui.app_state.local_server_state == LocalServerState::Restarting {
+                    tui.app_state.log("[INFO] Server stopped. Starting again...".to_string());
+                    tui.app_state.local_server_state = LocalServerState::Starting;
+                    tui.draw()?; // Redraw to show "Starting"
+
+                    let (handle_new, tx_new) = start_server_task().await;
+                    server_handle = Some(handle_new);
+                    shutdown_tx = Some(tx_new);
+                    tui.app_state.local_server_state = LocalServerState::Running;
+                    tui.app_state.log("[INFO] Server restarted successfully.".to_string());
+                }
+            }
         }
 
-        if let Ok(command) = command_rx.try_recv() {
-            match command {
-                ServerCommand::Start => {
-                    if server_handle.is_none() {
-                        tui.app_state.local_server_state = LocalServerState::Starting;
-                        tui.draw()?;
-                        let (handle, tx) = start_server_task().await;
-                        server_handle = Some(handle);
-                        shutdown_tx = Some(tx);
-                        tui.app_state.local_server_state = LocalServerState::Running;
-                    }
-                }
-                ServerCommand::Stop => {
-                    if let Some(tx) = shutdown_tx.take() {
-                        tui.app_state.local_server_state = LocalServerState::Stopping;
-                        tui.draw()?;
-                        tx.send(()).ok();
-                        if let Some(handle) = server_handle.take() {
-                            handle.await??;
+        // --- Step 2: Handle commands from the TUI ---
+        if stopping_handle.is_none() { // Don't process new commands while a stop is pending
+            if let Ok(command) = command_rx.try_recv() {
+                match command {
+                    ServerCommand::Start => {
+                        if server_handle.is_none() {
+                            tui.app_state.local_server_state = LocalServerState::Starting;
+                            tui.app_state.log("[CMD] Starting server...".to_string());
+                            tui.draw()?; // Redraw to show "Starting"
+
+                            let (handle, tx) = start_server_task().await;
+                            server_handle = Some(handle);
+                            shutdown_tx = Some(tx);
+                            tui.app_state.local_server_state = LocalServerState::Running;
+                            tui.app_state.log("[INFO] Server started successfully.".to_string());
                         }
-                        tui.app_state.local_server_state = LocalServerState::Stopped;
                     }
-                }
-                ServerCommand::Restart => {
-                    if let Some(tx) = shutdown_tx.take() {
-                        tui.app_state.local_server_state = LocalServerState::Restarting;
-                        tui.app_state.log("[CMD] Stopping server for restart...".to_string());
-                        tui.draw()?;
-                        tx.send(()).ok();
-                        if let Some(handle) = server_handle.take() {
-                            handle.await??;
+                    ServerCommand::Stop => {
+                        if let Some(tx) = shutdown_tx.take() {
+                            tui.app_state.local_server_state = LocalServerState::Stopping;
+                            tui.app_state.log("[CMD] Stopping server...".to_string());
+                            tx.send(()).ok();
+                            stopping_handle = server_handle.take();
                         }
-                        
-                        tui.app_state.log("[INFO] Server stopped. Restarting...".to_string());
-                        tui.draw()?;
-                        let (handle, tx_new) = start_server_task().await;
-                        server_handle = Some(handle);
-                        shutdown_tx = Some(tx_new);
-                        tui.app_state.local_server_state = LocalServerState::Running;
-                        tui.app_state.log("[INFO] Server restarted successfully.".to_string());
+                    }
+                    ServerCommand::Restart => {
+                        if let Some(tx) = shutdown_tx.take() {
+                            tui.app_state.local_server_state = LocalServerState::Restarting;
+                            tui.app_state.log("[CMD] Restarting server...".to_string());
+                            tx.send(()).ok();
+                            stopping_handle = server_handle.take();
+                        }
                     }
                 }
             }
         }
+
+        // --- Step 3: Draw the UI and handle input ---
+        tui.draw()?;
+        if tui.handle_events()? {
+            break; // Exit loop if 'q' is pressed
+        }
+
+        // Give the OS a little time to breathe
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
     }
 
-    // Ensure server is stopped on exit
+    // --- Final cleanup on exit ---
     if let Some(tx) = shutdown_tx.take() {
         tx.send(()).ok();
         if let Some(handle) = server_handle.take() {
