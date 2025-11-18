@@ -1,5 +1,5 @@
 use anyhow::Result;
-use mumble::ui::Tui;
+use mumble::ui::client::Tui;
 
 #[tokio::main]
 async fn main() -> Result<()> {
