@@ -29,7 +29,7 @@ pub enum ServerCommand {
 }
 
 pub enum CurrentView {
-    ServerList,
+    Chat,
     LocalServerLog,
 }
 
@@ -38,7 +38,7 @@ pub struct AppState {
     servers: Vec<ServerInfo>,
     pub local_server_state: LocalServerState,
     pub current_view: CurrentView,
-    pub local_server_logs: Arc<Mutex<Vec<String>>>,
+    pub local_server_logs: Arc<Mutex<Vec<String>>>
 }
 
 impl AppState {
@@ -47,14 +47,14 @@ impl AppState {
             "[INFO] Welcome to Mumble!".to_string(),
             "[INFO] Press 'q' to quit.".to_string(),
             "[INFO] Use 's' to start/stop and 'r' to restart the local server.".to_string(),
-            r"[INFO] Press '\' to toggle server log view.".to_string(),
+            r"[INFO] Press '\\' to toggle server log view.".to_string(),
         ];
 
         Self {
             log_messages,
             servers,
             local_server_state: LocalServerState::Stopped,
-            current_view: CurrentView::ServerList,
+            current_view: CurrentView::Chat,
             local_server_logs,
         }
     }
@@ -101,8 +101,8 @@ impl Tui {
                         KeyCode::Char('q') => return Ok(true),
                         KeyCode::Char('\\') => {
                             self.app_state.current_view = match self.app_state.current_view {
-                                CurrentView::ServerList => CurrentView::LocalServerLog,
-                                CurrentView::LocalServerLog => CurrentView::ServerList,
+                                CurrentView::Chat => CurrentView::LocalServerLog,
+                                CurrentView::LocalServerLog => CurrentView::Chat,
                             };
                         }
                         KeyCode::Char('s') => {
@@ -138,7 +138,7 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(5), // For the local server widget
-            Constraint::Min(0),    // For the main view (server list or log)
+            Constraint::Min(0),    // For the main content area
             Constraint::Length(5), // For the client log pane
         ])
         .split(frame.area());
@@ -146,14 +146,23 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
     let local_server_widget = local_server::render(&app_state.local_server_state);
     frame.render_widget(local_server_widget, main_layout[0]);
 
+    let main_content_layout = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(30), Constraint::Percentage(70)])
+        .split(main_layout[1]);
+
+    let server_list = servers::render_server_list(&app_state.servers);
+    frame.render_widget(server_list, main_content_layout[0]);
+
     match app_state.current_view {
-        CurrentView::ServerList => {
-            let server_list = servers::render_server_list(&app_state.servers);
-            frame.render_widget(server_list, main_layout[1]);
+        CurrentView::Chat => {
+            let chat_widget = Paragraph::new("Chat view placeholder...")
+                .block(Block::default().title("Chat").borders(Borders::ALL));
+            frame.render_widget(chat_widget, main_content_layout[1]);
         }
         CurrentView::LocalServerLog => {
             let log_view = log_view::render(&app_state.local_server_logs);
-            frame.render_widget(log_view, main_layout[1]);
+            frame.render_widget(log_view, main_content_layout[1]);
         }
     }
 

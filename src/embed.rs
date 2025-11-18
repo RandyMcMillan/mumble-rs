@@ -7,7 +7,6 @@ use env_logger::Builder;
 use log::{info, LevelFilter};
 use rustls::pki_types::PrivateKeyDer;
 use rustls::ServerConfig;
-use std::io::Write;
 use std::sync::{Arc, Mutex};
 use tokio::sync::oneshot;
 use tokio_rusqlite::Connection;
