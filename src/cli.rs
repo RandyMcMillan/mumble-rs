@@ -1,6 +1,16 @@
 use crate::config::{read_config, MetaParams};
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use log::info;
+
+#[derive(ValueEnum, Debug, Clone)]
+#[clap(rename_all = "kebab_case")]
+pub enum LogLevel {
+    Error,
+    Warn,
+    Info,
+    Debug,
+    Trace,
+}
 
 /// Mumble server (murmur)
 #[derive(Parser, Debug)]
@@ -9,6 +19,10 @@ struct Args {
     /// Path to the configuration file
     #[arg(short, long, env = "MUMBLE_CONFIG", default_value = "murmur.ini")]
     config: String,
+
+    /// Set the logging level
+    #[arg(long, env = "MUMBLE_LOGGING")]
+    logging: Option<LogLevel>,
 
     #[arg(long, env = "MUMBLE_BASE_PATH")]
     base_path: Option<String>,
@@ -170,6 +184,7 @@ pub struct Config {
     pub generate_cert: bool,
     pub generate_keys: bool,
     pub key_from_hash: Option<String>,
+    pub logging: Option<LogLevel>,
 }
 
 pub fn load_and_merge_config() -> Config {
@@ -178,6 +193,7 @@ pub fn load_and_merge_config() -> Config {
     let generate_cert = args.generate_cert;
     let generate_keys = args.generate_keys;
     let key_from_hash = args.key_from_hash;
+    let logging = args.logging;
 
     // Load configuration from file, or use defaults if file is not found or invalid
     let mut params = read_config(&args.config).unwrap_or_else(|e| {
@@ -400,5 +416,6 @@ pub fn load_and_merge_config() -> Config {
         generate_cert,
         generate_keys,
         key_from_hash,
+        logging,
     }
 }

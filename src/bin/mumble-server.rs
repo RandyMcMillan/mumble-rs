@@ -112,6 +112,17 @@ async fn main() -> Result<()> {
 
     let log_messages = Arc::new(Mutex::new(Vec::new()));
 
+    let log_level = match config.logging {
+        Some(level) => match level {
+            mumble::cli::LogLevel::Error => LevelFilter::Error,
+            mumble::cli::LogLevel::Warn => LevelFilter::Warn,
+            mumble::cli::LogLevel::Info => LevelFilter::Info,
+            mumble::cli::LogLevel::Debug => LevelFilter::Debug,
+            mumble::cli::LogLevel::Trace => LevelFilter::Trace,
+        },
+        None => LevelFilter::Info,
+    };
+
     if config.tui {
         let log_messages_clone = Arc::clone(&log_messages);
         let mut builder = Builder::new();
@@ -121,10 +132,11 @@ async fn main() -> Result<()> {
                 log_messages_clone.lock().unwrap().push(msg.clone());
                 writeln!(buf, "{}", msg)
             })
-            .filter(None, LevelFilter::Info)
+            .filter(None, log_level)
             .init();
     } else {
-        env_logger::init();
+        let mut builder = Builder::new();
+        builder.filter(None, log_level).init();
     }
 
     if config.generate_cert || config.generate_keys {
