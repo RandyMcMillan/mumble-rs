@@ -1,3 +1,7 @@
+murmur.sqlite-shm
+murmur.sqlite-wal
+murmur.sqlite
+
 mumble-server.key
 mumble-server.pem
 

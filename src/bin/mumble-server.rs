@@ -4,10 +4,11 @@
 
 use anyhow::{anyhow, Result};
 use ed25519_dalek::SigningKey;
-use env_logger::Builder;
-use log::{error, info, LevelFilter};
+use log::info;
 use mumble::cli;
 use mumble::config::{DbConnectionParameter, MetaParams};
+use mumble::db;
+use mumble::server::Meta;
 use mumble::tui::Tui;
 use pkcs8::EncodePrivateKey;
 use rcgen::{
@@ -16,12 +17,8 @@ use rcgen::{
 use rusqlite::Connection as SqliteConnection;
 use rustls::pki_types::PrivateKeyDer;
 use rustls::ServerConfig;
-use std::collections::HashMap;
-use std::io::Write;
 use std::sync::{Arc, Mutex};
 use std::thread;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::net::TcpListener;
 use tokio::signal::unix::{signal, SignalKind};
 use tokio_rustls::TlsAcceptor;
 
@@ -76,172 +73,7 @@ fn generate_cert(cert_path: &str, key_path: &str, hash_seed: Option<&str>) -> Re
     Ok(())
 }
 
-// Placeholder for the Server struct
-pub struct Server {
-    pub id: u32,
-    pub is_valid: bool,
-    // Add other server-specific fields here
-}
 
-impl Server {
-    pub fn new(id: u32) -> Self {
-        // In a real implementation, this would load server configuration from DB
-        // and perform validation.
-        Self { id, is_valid: true }
-    }
-
-    pub fn initialize_cert(&self) {
-        info!(
-            "Server {}: Initializing certificates (placeholder).",
-            self.id
-        );
-    }
-
-    pub fn log(&self, message: &str) {
-        info!("Server {}: {}", self.id, message);
-    }
-}
-
-// Equivalent to C++ Meta
-pub struct Meta {
-    pub params: MetaParams,
-    pub db_connection: SqliteConnection, // Using rusqlite for now
-    pub servers: HashMap<u32, Server>,
-}
-
-impl Meta {
-    pub fn new(params: MetaParams, db_connection: SqliteConnection) -> Self {
-        Self {
-            params,
-            db_connection,
-            servers: HashMap::new(),
-        }
-    }
-
-    // Placeholder for dbWrapper.getBootServers()
-    fn get_boot_servers(&self) -> Result<Vec<u32>> {
-        // For now, return an empty vector, or a default server ID if no servers exist
-        let mut stmt = self
-            .db_connection
-            .prepare("SELECT server_id FROM servers WHERE boot = 1")?;
-        let server_ids = stmt
-            .query_map([], |row| row.get(0))?
-            .filter_map(|id| id.ok())
-            .collect();
-        Ok(server_ids)
-    }
-
-    // Placeholder for dbWrapper.addServer()
-    fn add_server(&mut self) -> Result<u32> {
-        self.db_connection
-            .execute("INSERT INTO servers (boot) VALUES (0)", [])?;
-        Ok(self.db_connection.last_insert_rowid() as u32)
-    }
-
-    // Placeholder for dbWrapper.setServerBootProperty()
-    fn set_server_boot_property(&self, server_id: u32, boot: bool) -> Result<()> {
-        let boot_val = if boot { 1 } else { 0 };
-        self.db_connection.execute(
-            "UPDATE servers SET boot = ?1 WHERE server_id = ?2",
-            &[&boot_val, &(server_id as i64)],
-        )?;
-        Ok(())
-    }
-
-    // Placeholder for dbWrapper.serverExists()
-    fn server_exists(&self, server_id: u32) -> Result<bool> {
-        let mut stmt = self
-            .db_connection
-            .prepare("SELECT COUNT(*) FROM servers WHERE server_id = ?1")?;
-        let count: i64 = stmt.query_row([server_id as i64], |row| row.get(0))?;
-        Ok(count > 0)
-    }
-
-    pub fn boot_all(&mut self, create_default_instance: bool) -> Result<()> {
-        let mut boot_server_ids = self.get_boot_servers()?;
-
-        if boot_server_ids.is_empty() && create_default_instance {
-            let new_server_id = self.add_server()?;
-            self.set_server_boot_property(new_server_id, true)?;
-            boot_server_ids.push(new_server_id);
-            info!("Created new server default instance: {}", new_server_id);
-        }
-
-        for current_server_id in boot_server_ids {
-            self.boot(current_server_id)?;
-        }
-        Ok(())
-    }
-
-    pub fn boot(&mut self, srvnum: u32) -> Result<()> {
-        if self.servers.contains_key(&srvnum) {
-            info!("Server {} already running.", srvnum);
-            return Ok(());
-        }
-
-        if !self.server_exists(srvnum)? {
-            return Err(anyhow!("Server {} does not exist in database.", srvnum));
-        }
-
-        let s = Server::new(srvnum);
-        if !s.is_valid {
-            return Err(anyhow!("Server {} is not valid.", srvnum));
-        }
-
-        self.servers.insert(srvnum, s);
-        info!("Server {} started.", srvnum);
-        // TODO: Emit started signal
-
-        // TODO: Handle rlimit for file descriptors on Unix-like systems
-
-        Ok(())
-    }
-
-    pub async fn start_server(&self, acceptor: TlsAcceptor) -> Result<()> {
-        let addr = format!("0.0.0.0:{}", self.params.port);
-        let listener = TcpListener::bind(&addr).await?;
-        info!("Listening on {}", addr);
-
-        loop {
-            let (stream, peer_addr) = listener.accept().await?;
-            info!("New connection from: {}", peer_addr);
-
-            let acceptor = acceptor.clone();
-            tokio::spawn(async move {
-                match acceptor.accept(stream).await {
-                    Ok(mut stream) => {
-                        info!("TLS handshake successful with {}", peer_addr);
-                        // TODO: Handle Mumble protocol communication
-                        let mut buf = vec![0; 1024];
-                        loop {
-                            match stream.read(&mut buf).await {
-                                Ok(0) => {
-                                    info!("Client {} disconnected.", peer_addr);
-                                    break;
-                                }
-                                Ok(n) => {
-                                    let msg = String::from_utf8_lossy(&buf[..n]);
-                                    info!("Received from {}: {}", peer_addr, msg);
-                                    stream
-                                        .write_all(b"ACK")
-                                        .await
-                                        .expect("Failed to write to stream");
-                                }
-                                Err(e) => {
-                                    error!("Error reading from {}: {}", peer_addr, e);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    Err(e) => {
-                        error!("TLS handshake failed with {}: {}", peer_addr, e);
-                    }
-                }
-            });
-        }
-    }
-}
 
 fn get_db_connection_parameter(params: &MetaParams) -> Result<DbConnectionParameter> {
     match params.db_driver.as_str() {
@@ -273,37 +105,14 @@ fn get_db_connection_parameter(params: &MetaParams) -> Result<DbConnectionParame
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    env_logger::init();
+
     let config = cli::load_and_merge_config();
-    let params = config.params;
-
-    let log_messages = Arc::new(Mutex::new(Vec::new()));
-
-    if config.tui {
-        let log_messages_clone = Arc::clone(&log_messages);
-        let mut builder = Builder::new();
-        builder
-            .format(move |buf, record| {
-                let msg = format!("[{}] {}", record.level(), record.args());
-                log_messages_clone.lock().unwrap().push(msg.clone());
-                writeln!(buf, "{}", msg)
-            })
-            .filter(None, LevelFilter::Info)
-            .init();
-
-        thread::spawn(move || {
-            let mut tui = Tui::new(Arc::clone(&log_messages)).unwrap();
-            tui.run().unwrap();
-        });
-    } else {
-        env_logger::init();
-    }
-
-    info!("Starting Mumble server...");
-
-    let mut cert_file = params.ssl_cert.clone();
-    let mut key_file = params.ssl_key.clone();
+    let mut params = config.params;
 
     if config.generate_cert || config.generate_keys {
+        let mut cert_file = params.ssl_cert.clone();
+        let mut key_file = params.ssl_key.clone();
         if cert_file.is_empty() {
             cert_file = "mumble-server.pem".to_string();
             info!("'sslCert' not set, using default: {}", cert_file);
@@ -315,6 +124,19 @@ async fn main() -> Result<()> {
         generate_cert(&cert_file, &key_file, config.key_from_hash.as_deref())?;
         return Ok(());
     }
+
+    if params.ssl_cert.is_empty() {
+        params.ssl_cert = "mumble-server.pem".to_string();
+    }
+    if params.ssl_key.is_empty() {
+        params.ssl_key = "mumble-server.key".to_string();
+    }
+
+    info!("Starting Mumble server...");
+
+    let cert_file = params.ssl_cert.clone();
+    let key_file = params.ssl_key.clone();
+
 
     info!(
         "Server configured with port: {} and welcome text: {}",
@@ -371,9 +193,10 @@ async fn main() -> Result<()> {
         DbConnectionParameter::SQLite { path, use_wal } => {
             let conn = SqliteConnection::open(&path).expect("Failed to open SQLite database");
             if use_wal {
-                conn.execute("PRAGMA journal_mode = WAL", [])
+                conn.pragma_update(None, "journal_mode", "WAL")
                     .expect("Failed to set WAL mode");
             }
+            db::initialize_database(&conn)?;
             conn
         }
         DbConnectionParameter::MySQL { .. } => {
@@ -392,6 +215,16 @@ async fn main() -> Result<()> {
 
     // Boot all servers
     meta.boot_all(true).expect("Failed to boot servers");
+
+    // All startup checks passed, now we can start the TUI if requested
+    if config.tui {
+        let log_messages = Arc::new(Mutex::new(Vec::new()));
+        let tui_log_messages = Arc::clone(&log_messages);
+        thread::spawn(move || {
+            let mut tui = Tui::new(tui_log_messages).unwrap();
+            tui.run().unwrap();
+        });
+    }
 
     // Start listening for client connections
     let mut sigint = signal(SignalKind::interrupt())?;

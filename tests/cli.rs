@@ -16,15 +16,19 @@ fn test_help_message() {
 }
 
 #[test]
+#[allow(deprecated)]
 fn test_missing_ssl_error() {
-    let output = StdCommand::new("target/debug/mumble-server")
-        .output()
-        .expect("failed to execute process");
+    // Create a temporary directory to run the command in, ensuring no certs exist
+    let temp_dir = tempfile::tempdir().unwrap();
 
-    let error_msg_str = String::from_utf8_lossy(&output.stderr);
-    assert!(error_msg_str.contains(
-        "'sslCert' and 'sslKey' must be set in the config file or via command line arguments."
-    ));
+    let mut cmd = Command::cargo_bin("mumble-server").unwrap();
+    let assert = cmd
+        .current_dir(temp_dir.path())
+        .assert();
+
+    let output = assert.failure();
+    let error_msg_str = String::from_utf8_lossy(&output.get_output().stderr);
+    assert!(error_msg_str.contains("Certificate or key file not found."));
 }
 
 #[test]
