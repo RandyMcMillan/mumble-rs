@@ -10,6 +10,10 @@ crate-type = ["cdylib", "rlib"]
 name = "mumble-server"
 path = "src/bin/mumble-server.rs"
 
+[[bin]]
+name = "mumble-client"
+path = "src/bin/mumble-client.rs"
+
 [dependencies]
 anyhow = "1.0"
 clap = { version = "4.5.20", features = ["derive", "env", "cargo"] }

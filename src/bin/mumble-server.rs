@@ -10,7 +10,7 @@ use mumble::cli;
 use mumble::config::{DbConnectionParameter, MetaParams};
 use mumble::db;
 use mumble::server::Meta;
-use mumble::tui::Tui;
+use mumble::ui::Tui;
 use pkcs8::EncodePrivateKey;
 use rcgen::{
     generate_simple_self_signed, CertificateParams, DistinguishedName, KeyPair, PKCS_ED25519,
@@ -244,28 +244,37 @@ async fn main() -> Result<()> {
     // Boot all servers
     meta.boot_all(true).expect("Failed to boot servers");
 
-    // All startup checks passed, now we can start the TUI if requested
+    // Start listening for client connections
+    let mut sigint = signal(SignalKind::interrupt())?;
+    let mut sigterm = signal(SignalKind::terminate())?;
+
     if config.tui {
         let tui_log_messages = Arc::clone(&log_messages);
         thread::spawn(move || {
             let mut tui = Tui::new(tui_log_messages).unwrap();
             tui.run().unwrap();
         });
-    }
 
-    // Start listening for client connections
-    let mut sigint = signal(SignalKind::interrupt())?;
-    let mut sigterm = signal(SignalKind::terminate())?;
-
-    tokio::select! {
-        _ = meta.start_server(acceptor) => {
-            info!("Server stopped unexpectedly.");
+        // Block the main thread in TUI mode until a shutdown signal is received
+        tokio::select! {
+            _ = sigint.recv() => {
+                info!("SIGINT received, shutting down gracefully...");
+            }
+            _ = sigterm.recv() => {
+                info!("SIGTERM received, shutting down gracefully...");
+            }
         }
-        _ = sigint.recv() => {
-            info!("SIGINT received, shutting down gracefully...");
-        }
-        _ = sigterm.recv() => {
-            info!("SIGTERM received, shutting down gracefully...");
+    } else {
+        tokio::select! {
+            _ = meta.start_server(acceptor) => {
+                info!("Server stopped unexpectedly.");
+            }
+            _ = sigint.recv() => {
+                info!("SIGINT received, shutting down gracefully...");
+            }
+            _ = sigterm.recv() => {
+                info!("SIGTERM received, shutting down gracefully...");
+            }
         }
     }
 
