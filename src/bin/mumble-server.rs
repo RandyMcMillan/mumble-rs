@@ -18,7 +18,6 @@ use rcgen::{
 use rusqlite::Connection as SqliteConnection;
 use rustls::pki_types::PrivateKeyDer;
 use rustls::ServerConfig;
-use std::io::Write;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use tokio::signal::unix::{signal, SignalKind};
@@ -127,10 +126,10 @@ async fn main() -> Result<()> {
         let log_messages_clone = Arc::clone(&log_messages);
         let mut builder = Builder::new();
         builder
-            .format(move |buf, record| {
+            .format(move |_buf, record| {
                 let msg = format!("[{}] {}", record.level(), record.args());
-                log_messages_clone.lock().unwrap().push(msg.clone());
-                writeln!(buf, "{}", msg)
+                log_messages_clone.lock().unwrap().push(msg);
+                Ok(())
             })
             .filter(None, log_level)
             .init();
