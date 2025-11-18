@@ -4,7 +4,8 @@
 
 use anyhow::{anyhow, Result};
 use ed25519_dalek::SigningKey;
-use log::info;
+use env_logger::Builder;
+use log::{info, LevelFilter};
 use mumble::cli;
 use mumble::config::{DbConnectionParameter, MetaParams};
 use mumble::db;
@@ -17,6 +18,7 @@ use rcgen::{
 use rusqlite::Connection as SqliteConnection;
 use rustls::pki_types::PrivateKeyDer;
 use rustls::ServerConfig;
+use std::io::Write;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use tokio::signal::unix::{signal, SignalKind};
@@ -105,10 +107,25 @@ fn get_db_connection_parameter(params: &MetaParams) -> Result<DbConnectionParame
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env_logger::init();
-
     let config = cli::load_and_merge_config();
     let mut params = config.params;
+
+    let log_messages = Arc::new(Mutex::new(Vec::new()));
+
+    if config.tui {
+        let log_messages_clone = Arc::clone(&log_messages);
+        let mut builder = Builder::new();
+        builder
+            .format(move |buf, record| {
+                let msg = format!("[{}] {}", record.level(), record.args());
+                log_messages_clone.lock().unwrap().push(msg.clone());
+                writeln!(buf, "{}", msg)
+            })
+            .filter(None, LevelFilter::Info)
+            .init();
+    } else {
+        env_logger::init();
+    }
 
     if config.generate_cert || config.generate_keys {
         let mut cert_file = params.ssl_cert.clone();
@@ -218,7 +235,6 @@ async fn main() -> Result<()> {
 
     // All startup checks passed, now we can start the TUI if requested
     if config.tui {
-        let log_messages = Arc::new(Mutex::new(Vec::new()));
         let tui_log_messages = Arc::clone(&log_messages);
         thread::spawn(move || {
             let mut tui = Tui::new(tui_log_messages).unwrap();
