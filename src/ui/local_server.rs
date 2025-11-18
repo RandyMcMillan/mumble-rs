@@ -4,7 +4,7 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 
-pub fn render(state: &LocalServerState) -> Paragraph<'static> {
+pub fn render(state: &LocalServerState, has_focus: bool) -> Paragraph<'static> {
     let (status_text, button_text) = match state {
         LocalServerState::Running => (
             Line::from(vec!["Status: ".into(), "Running".green().bold()]),
@@ -35,6 +35,15 @@ pub fn render(state: &LocalServerState) -> Paragraph<'static> {
     ]);
 
     Paragraph::new(text)
-        .block(Block::default().title("Local Server").borders(Borders::ALL))
+        .block(
+            Block::default()
+                .title("Local Server")
+                .borders(Borders::ALL)
+                .border_style(if has_focus {
+                    Style::default().fg(Color::Yellow)
+                } else {
+                    Style::default()
+                }),
+        )
         .alignment(Alignment::Center)
 }

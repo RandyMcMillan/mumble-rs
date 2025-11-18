@@ -33,19 +33,39 @@ pub enum CurrentView {
     LocalServerLog,
 }
 
+#[derive(PartialEq, Eq, Clone, Copy)]
+pub enum FocusedWidget {
+    LocalServer,
+    ServerList,
+    Content,
+}
+
+impl FocusedWidget {
+    pub fn next(&self) -> Self {
+        match self {
+            Self::LocalServer => Self::ServerList,
+            Self::ServerList => Self::Content,
+            Self::Content => Self::LocalServer,
+        }
+    }
+}
+
 pub struct AppState {
     log_messages: Vec<String>,
     servers: Vec<ServerInfo>,
     pub local_server_state: LocalServerState,
     pub current_view: CurrentView,
-    pub local_server_logs: Arc<Mutex<Vec<String>>>
+    pub local_server_logs: Arc<Mutex<Vec<String>>>,
+    pub focused_widget: FocusedWidget,
+    pub selected_server: usize,
+    pub content_scroll: usize,
 }
 
 impl AppState {
     fn new(servers: Vec<ServerInfo>, local_server_logs: Arc<Mutex<Vec<String>>>) -> Self {
         let log_messages = vec![
             "[INFO] Welcome to Mumble!".to_string(),
-            "[INFO] Press 'q' to quit.".to_string(),
+            "[INFO] Press 'q' to quit, 'Tab' to navigate.".to_string(),
             "[INFO] Use 's' to start/stop and 'r' to restart the local server.".to_string(),
             r"[INFO] Press '\\' to toggle server log view.".to_string(),
         ];
@@ -56,6 +76,9 @@ impl AppState {
             local_server_state: LocalServerState::Stopped,
             current_view: CurrentView::Chat,
             local_server_logs,
+            focused_widget: FocusedWidget::ServerList,
+            selected_server: 0,
+            content_scroll: 0,
         }
     }
 
@@ -99,20 +122,47 @@ impl Tui {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
                         KeyCode::Char('q') => return Ok(true),
+                        KeyCode::Tab => {
+                            self.app_state.focused_widget = self.app_state.focused_widget.next();
+                        }
                         KeyCode::Char('\\') => {
                             self.app_state.current_view = match self.app_state.current_view {
                                 CurrentView::Chat => CurrentView::LocalServerLog,
                                 CurrentView::LocalServerLog => CurrentView::Chat,
                             };
                         }
-                        KeyCode::Char('s') => {
+                        KeyCode::Up => match self.app_state.focused_widget {
+                            FocusedWidget::ServerList => {
+                                if self.app_state.selected_server > 0 {
+                                    self.app_state.selected_server -= 1;
+                                }
+                            }
+                            FocusedWidget::Content => {
+                                if self.app_state.content_scroll > 0 {
+                                    self.app_state.content_scroll -= 1;
+                                }
+                            }
+                            _ => {}
+                        },
+                        KeyCode::Down => match self.app_state.focused_widget {
+                            FocusedWidget::ServerList => {
+                                if self.app_state.selected_server < self.app_state.servers.len() - 1 {
+                                    self.app_state.selected_server += 1;
+                                }
+                            }
+                            FocusedWidget::Content => {
+                                self.app_state.content_scroll += 1;
+                            }
+                            _ => {}
+                        },
+                        KeyCode::Char('s') if self.app_state.focused_widget == FocusedWidget::LocalServer => {
                             if self.app_state.local_server_state == LocalServerState::Running {
                                 self.command_tx.try_send(ServerCommand::Stop).ok();
                             } else if self.app_state.local_server_state == LocalServerState::Stopped {
                                 self.command_tx.try_send(ServerCommand::Start).ok();
                             }
                         }
-                        KeyCode::Char('r') => {
+                        KeyCode::Char('r') if self.app_state.focused_widget == FocusedWidget::LocalServer => {
                             if self.app_state.local_server_state == LocalServerState::Running {
                                 self.command_tx.try_send(ServerCommand::Restart).ok();
                             }
@@ -137,13 +187,16 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
     let main_layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(5), // For the local server widget
-            Constraint::Min(0),    // For the main content area
-            Constraint::Length(5), // For the client log pane
+            Constraint::Length(5),
+            Constraint::Min(0),
+            Constraint::Length(5),
         ])
         .split(frame.area());
 
-    let local_server_widget = local_server::render(&app_state.local_server_state);
+    let local_server_widget = local_server::render(
+        &app_state.local_server_state,
+        app_state.focused_widget == FocusedWidget::LocalServer,
+    );
     frame.render_widget(local_server_widget, main_layout[0]);
 
     let main_content_layout = Layout::default()
@@ -151,17 +204,35 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
         .constraints([Constraint::Percentage(30), Constraint::Percentage(70)])
         .split(main_layout[1]);
 
-    let server_list = servers::render_server_list(&app_state.servers);
+    let server_list = servers::render_server_list(
+        &app_state.servers,
+        app_state.focused_widget == FocusedWidget::ServerList,
+        app_state.selected_server,
+    );
     frame.render_widget(server_list, main_content_layout[0]);
 
     match app_state.current_view {
         CurrentView::Chat => {
             let chat_widget = Paragraph::new("Chat view placeholder...")
-                .block(Block::default().title("Chat").borders(Borders::ALL));
+                .block(
+                    Block::default()
+                        .title("Chat")
+                        .borders(Borders::ALL)
+                        .border_style(if app_state.focused_widget == FocusedWidget::Content {
+                            Style::default().fg(Color::Yellow)
+                        } else {
+                            Style::default()
+                        }),
+                )
+                .scroll((app_state.content_scroll as u16, 0));
             frame.render_widget(chat_widget, main_content_layout[1]);
         }
         CurrentView::LocalServerLog => {
-            let log_view = log_view::render(&app_state.local_server_logs);
+            let log_view = log_view::render(
+                &app_state.local_server_logs,
+                app_state.focused_widget == FocusedWidget::Content,
+                app_state.content_scroll,
+            );
             frame.render_widget(log_view, main_content_layout[1]);
         }
     }
