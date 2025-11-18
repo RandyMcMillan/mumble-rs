@@ -22,6 +22,10 @@ pub fn render(state: &LocalServerState) -> Paragraph<'static> {
             Line::from(vec!["Status: ".into(), "Stopping...".yellow().bold()]),
             " ".into(),
         ),
+        LocalServerState::Restarting => (
+            Line::from(vec!["Status: ".into(), "Restarting...".yellow().bold()]),
+            " ".into(),
+        ),
     };
 
     let text = Text::from(vec![

@@ -58,19 +58,21 @@ async fn main() -> Result<()> {
                 }
                 ServerCommand::Restart => {
                     if let Some(tx) = shutdown_tx.take() {
-                        tui.app_state.local_server_state = LocalServerState::Stopping;
+                        tui.app_state.local_server_state = LocalServerState::Restarting;
+                        tui.app_state.log("[CMD] Stopping server for restart...".to_string());
                         tui.draw()?;
                         tx.send(()).ok();
                         if let Some(handle) = server_handle.take() {
                             handle.await??;
                         }
                         
-                        tui.app_state.local_server_state = LocalServerState::Starting;
+                        tui.app_state.log("[INFO] Server stopped. Restarting...".to_string());
                         tui.draw()?;
                         let (handle, tx_new) = start_server_task().await;
                         server_handle = Some(handle);
                         shutdown_tx = Some(tx_new);
                         tui.app_state.local_server_state = LocalServerState::Running;
+                        tui.app_state.log("[INFO] Server restarted successfully.".to_string());
                     }
                 }
             }

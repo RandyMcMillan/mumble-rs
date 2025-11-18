@@ -12,12 +12,13 @@ use ratatui::{
 use std::io::{self, stdout, Stdout};
 use tokio::sync::mpsc;
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum LocalServerState {
     Stopped,
     Starting,
     Running,
     Stopping,
+    Restarting,
 }
 
 pub enum ServerCommand {
@@ -45,6 +46,10 @@ impl AppState {
             servers,
             local_server_state: LocalServerState::Stopped,
         }
+    }
+
+    pub fn log(&mut self, message: String) {
+        self.log_messages.push(message);
     }
 }
 
