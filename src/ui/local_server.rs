@@ -1,19 +1,27 @@
+use crate::ui::client::LocalServerState;
 use ratatui::{
     prelude::*,
     widgets::{Block, Borders, Paragraph},
 };
 
-pub fn render(is_running: bool) -> Paragraph<'static> {
-    let (status_text, button_text) = if is_running {
-        (
+pub fn render(state: &LocalServerState) -> Paragraph<'static> {
+    let (status_text, button_text) = match state {
+        LocalServerState::Running => (
             Line::from(vec!["Status: ".into(), "Running".green().bold()]),
-            " [ Stop ] [ Restart ] ",
-        )
-    } else {
-        (
+            " [S]top [R]estart ",
+        ),
+        LocalServerState::Stopped => (
             Line::from(vec!["Status: ".into(), "Stopped".red().bold()]),
-            " [ Start ] ",
-        )
+            " [S]tart ",
+        ),
+        LocalServerState::Starting => (
+            Line::from(vec!["Status: ".into(), "Starting...".yellow().bold()]),
+            " ".into(),
+        ),
+        LocalServerState::Stopping => (
+            Line::from(vec!["Status: ".into(), "Stopping...".yellow().bold()]),
+            " ".into(),
+        ),
     };
 
     let text = Text::from(vec![

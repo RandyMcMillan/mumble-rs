@@ -10,35 +10,52 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 use std::io::{self, stdout, Stdout};
+use tokio::sync::mpsc;
+
+#[derive(PartialEq, Eq)]
+pub enum LocalServerState {
+    Stopped,
+    Starting,
+    Running,
+    Stopping,
+}
+
+pub enum ServerCommand {
+    Start,
+    Stop,
+    Restart,
+}
 
 pub struct AppState {
     log_messages: Vec<String>,
     servers: Vec<ServerInfo>,
-    is_local_server_running: bool,
+    pub local_server_state: LocalServerState,
 }
 
 impl AppState {
-    fn new(servers: Vec<ServerInfo>, is_local_server_running: bool) -> Self {
+    fn new(servers: Vec<ServerInfo>) -> Self {
         let mock_logs = vec![
             "[INFO] Welcome to Mumble!".to_string(),
             "[INFO] Press 'q' to quit.".to_string(),
+            "[INFO] Use 's' to start/stop and 'r' to restart the local server.".to_string(),
         ];
 
         Self {
             log_messages: mock_logs,
             servers,
-            is_local_server_running,
+            local_server_state: LocalServerState::Stopped,
         }
     }
 }
 
 pub struct Tui {
     terminal: Terminal<CrosstermBackend<Stdout>>,
-    app_state: AppState,
+    pub app_state: AppState,
+    command_tx: mpsc::Sender<ServerCommand>,
 }
 
 impl Tui {
-    pub fn new(servers: Vec<ServerInfo>, is_local_server_running: bool) -> io::Result<Self> {
+    pub fn new(servers: Vec<ServerInfo>, command_tx: mpsc::Sender<ServerCommand>) -> io::Result<Self> {
         let backend = CrosstermBackend::new(stdout());
         let mut terminal = Terminal::new(backend)?;
         enable_raw_mode()?;
@@ -46,25 +63,40 @@ impl Tui {
         terminal.clear()?;
         Ok(Self {
             terminal,
-            app_state: AppState::new(servers, is_local_server_running),
+            app_state: AppState::new(servers),
+            command_tx,
         })
     }
 
-    pub fn run(&mut self) -> io::Result<()> {
-        loop {
-            self.terminal.draw(|frame| ui(frame, &self.app_state))?;
+    pub fn draw(&mut self) -> io::Result<()> {
+        self.terminal.draw(|frame| ui(frame, &self.app_state))?;
+        Ok(())
+    }
 
-            if event::poll(std::time::Duration::from_millis(100))? {
-                if let Event::Key(key) = event::read()? {
-                    if key.kind == KeyEventKind::Press {
-                        if let KeyCode::Char('q') = key.code {
-                            break;
+    pub fn handle_events(&mut self) -> io::Result<bool> {
+        if event::poll(std::time::Duration::from_millis(100))? {
+            if let Event::Key(key) = event::read()? {
+                if key.kind == KeyEventKind::Press {
+                    match key.code {
+                        KeyCode::Char('q') => return Ok(true),
+                        KeyCode::Char('s') => {
+                            if self.app_state.local_server_state == LocalServerState::Running {
+                                self.command_tx.try_send(ServerCommand::Stop).ok();
+                            } else if self.app_state.local_server_state == LocalServerState::Stopped {
+                                self.command_tx.try_send(ServerCommand::Start).ok();
+                            }
                         }
+                        KeyCode::Char('r') => {
+                            if self.app_state.local_server_state == LocalServerState::Running {
+                                self.command_tx.try_send(ServerCommand::Restart).ok();
+                            }
+                        }
+                        _ => {}
                     }
                 }
             }
         }
-        Ok(())
+        Ok(false)
     }
 }
 
@@ -85,7 +117,7 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
         ])
         .split(frame.area());
 
-    let local_server_widget = local_server::render(app_state.is_local_server_running);
+    let local_server_widget = local_server::render(&app_state.local_server_state);
     frame.render_widget(local_server_widget, main_layout[0]);
 
     let server_list = servers::render_server_list(&app_state.servers);
