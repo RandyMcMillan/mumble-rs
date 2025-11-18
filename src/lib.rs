@@ -8,6 +8,7 @@ pub mod cli;
 pub mod config;
 pub mod db;
 pub mod lan;
+pub mod local;
 pub mod server;
 pub mod ui;
 
