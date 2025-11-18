@@ -1,5 +1,5 @@
 use crate::lan::ServerInfo;
-use crate::ui::servers;
+use crate::ui::{local_server, servers};
 use crossterm::{
     event::{self, Event, KeyCode, KeyEventKind},
     execute,
@@ -14,10 +14,11 @@ use std::io::{self, stdout, Stdout};
 pub struct AppState {
     log_messages: Vec<String>,
     servers: Vec<ServerInfo>,
+    is_local_server_running: bool,
 }
 
 impl AppState {
-    fn new(servers: Vec<ServerInfo>) -> Self {
+    fn new(servers: Vec<ServerInfo>, is_local_server_running: bool) -> Self {
         let mock_logs = vec![
             "[INFO] Welcome to Mumble!".to_string(),
             "[INFO] Press 'q' to quit.".to_string(),
@@ -26,6 +27,7 @@ impl AppState {
         Self {
             log_messages: mock_logs,
             servers,
+            is_local_server_running,
         }
     }
 }
@@ -36,7 +38,7 @@ pub struct Tui {
 }
 
 impl Tui {
-    pub fn new(servers: Vec<ServerInfo>) -> io::Result<Self> {
+    pub fn new(servers: Vec<ServerInfo>, is_local_server_running: bool) -> io::Result<Self> {
         let backend = CrosstermBackend::new(stdout());
         let mut terminal = Terminal::new(backend)?;
         enable_raw_mode()?;
@@ -44,7 +46,7 @@ impl Tui {
         terminal.clear()?;
         Ok(Self {
             terminal,
-            app_state: AppState::new(servers),
+            app_state: AppState::new(servers, is_local_server_running),
         })
     }
 
@@ -76,14 +78,21 @@ impl Drop for Tui {
 fn ui(frame: &mut Frame, app_state: &AppState) {
     let main_layout = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Percentage(70), Constraint::Percentage(30)])
+        .constraints([
+            Constraint::Length(5), // For the local server widget
+            Constraint::Min(0),    // For the server list
+            Constraint::Length(5), // For the log pane
+        ])
         .split(frame.area());
 
+    let local_server_widget = local_server::render(app_state.is_local_server_running);
+    frame.render_widget(local_server_widget, main_layout[0]);
+
     let server_list = servers::render_server_list(&app_state.servers);
-    frame.render_widget(server_list, main_layout[0]);
+    frame.render_widget(server_list, main_layout[1]);
 
     let log_pane = render_log_pane(app_state);
-    frame.render_widget(log_pane, main_layout[1]);
+    frame.render_widget(log_pane, main_layout[2]);
 }
 
 fn render_log_pane<'a>(app_state: &'a AppState) -> Paragraph<'a> {

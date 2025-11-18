@@ -4,13 +4,16 @@ use mumble::ui::client::Tui;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut servers = lan::fetch_servers();
+    let servers = lan::fetch_servers();
+    let is_local_running = if let Some(_local_server) = local::detect_local_server() {
+        // We no longer add the local server to the main list,
+        // but we use its detection to set the status for the dedicated widget.
+        true
+    } else {
+        false
+    };
 
-    if let Some(local_server) = local::detect_local_server() {
-        servers.insert(0, local_server);
-    }
-
-    let mut tui = Tui::new(servers)?;
+    let mut tui = Tui::new(servers, is_local_running)?;
     tui.run()?;
     Ok(())
 }
