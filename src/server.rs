@@ -1,10 +1,15 @@
-use crate::config::{MetaParams, ServerParams};
-use anyhow::{anyhow, Result};
+use crate::config::MetaParams;
+use anyhow::Result;
 use log::{info, warn};
 use std::collections::HashMap;
 use tokio::net::{TcpListener, TcpStream};
 use tokio_rustls::TlsAcceptor;
 use tokio_rusqlite::Connection as TokioConnection;
+
+#[derive(Clone)]
+pub struct ServerParams {
+    pub port: u16,
+}
 
 pub struct Server {
     pub params: ServerParams,

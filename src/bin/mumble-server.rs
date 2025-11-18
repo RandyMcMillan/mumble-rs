@@ -7,7 +7,7 @@ use ed25519_dalek::SigningKey;
 use env_logger::Builder;
 use log::{info, LevelFilter};
 use mumble::cli;
-use mumble::config::{DbConnectionParameter, MetaParams};
+use mumble::config::MetaParams;
 use mumble::db;
 use mumble::server::Meta;
 use pkcs8::EncodePrivateKey;
@@ -160,7 +160,7 @@ async fn main() -> Result<()> {
     let mut meta = Meta::new(params, db_connection);
     info!("Mumble API initialized.");
 
-    meta.boot_all(true)?;
+    meta.boot_all(true).await?;
 
     let mut sigint = signal(SignalKind::interrupt())?;
     let mut sigterm = signal(SignalKind::terminate())?;

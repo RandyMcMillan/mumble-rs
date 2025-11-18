@@ -1,5 +1,5 @@
 use crate::cli;
-use crate::config::{DbConnectionParameter, MetaParams};
+use crate::config::MetaParams;
 use crate::db;
 use crate::server::Meta;
 use anyhow::{anyhow, Result};
@@ -63,7 +63,7 @@ pub async fn run_embedded_server(mut shutdown_rx: oneshot::Receiver<()>) -> Resu
 
     let mut meta = Meta::new(params, db_connection);
     info!("Mumble API initialized for embedded server.");
-    meta.boot_all(true)?;
+    meta.boot_all(true).await?;
 
     info!("Embedded server booted.");
 
