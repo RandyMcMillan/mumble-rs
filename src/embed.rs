@@ -3,10 +3,12 @@ use crate::config::MetaParams;
 use crate::db;
 use crate::server::Meta;
 use anyhow::{anyhow, Result};
-use log::info;
+use env_logger::Builder;
+use log::{info, LevelFilter};
 use rustls::pki_types::PrivateKeyDer;
 use rustls::ServerConfig;
-use std::sync::Arc;
+use std::io::Write;
+use std::sync::{Arc, Mutex};
 use tokio::sync::oneshot;
 use tokio_rusqlite::Connection;
 use tokio_rustls::TlsAcceptor;
@@ -25,9 +27,24 @@ async fn get_db_connection(params: &MetaParams) -> Result<Connection> {
 }
 
 /// Runs an embedded Mumble server instance.
-pub async fn run_embedded_server(mut shutdown_rx: oneshot::Receiver<()>) -> Result<()> {
+pub async fn run_embedded_server(
+    log_buffer: Arc<Mutex<Vec<String>>>,
+    mut shutdown_rx: oneshot::Receiver<()>,
+) -> Result<()> {
     let config = cli::load_and_merge_config();
     let mut params = config.params;
+
+    // Configure logger to write to the shared buffer
+    let log_buffer_clone = Arc::clone(&log_buffer);
+    let mut builder = Builder::new();
+    builder
+        .format(move |buf, record| {
+            let msg = format!("[{}] {}", record.level(), record.args());
+            log_buffer_clone.lock().unwrap().push(msg.clone());
+            writeln!(buf, "{}", msg) // Also write to stdout for debugging
+        })
+        .filter(None, LevelFilter::Info) // Or use config.logging
+        .init();
 
     if params.ssl_cert.is_empty() {
         params.ssl_cert = "mumble-server.pem".to_string();
