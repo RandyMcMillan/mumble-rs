@@ -1,5 +1,5 @@
 use crate::lan::ServerInfo;
-use crate::ui::{local_server, servers};
+use crate::ui::{local_server, log_view, servers};
 use crossterm::{
     event::{self, Event, KeyCode, KeyEventKind},
     execute,
@@ -10,6 +10,7 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 use std::io::{self, stdout, Stdout};
+use std::sync::{Arc, Mutex};
 use tokio::sync::mpsc;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -27,24 +28,34 @@ pub enum ServerCommand {
     Restart,
 }
 
+pub enum CurrentView {
+    ServerList,
+    LocalServerLog,
+}
+
 pub struct AppState {
     log_messages: Vec<String>,
     servers: Vec<ServerInfo>,
     pub local_server_state: LocalServerState,
+    pub current_view: CurrentView,
+    pub local_server_logs: Arc<Mutex<Vec<String>>>,
 }
 
 impl AppState {
-    fn new(servers: Vec<ServerInfo>) -> Self {
-        let mock_logs = vec![
+    fn new(servers: Vec<ServerInfo>, local_server_logs: Arc<Mutex<Vec<String>>>) -> Self {
+        let log_messages = vec![
             "[INFO] Welcome to Mumble!".to_string(),
             "[INFO] Press 'q' to quit.".to_string(),
             "[INFO] Use 's' to start/stop and 'r' to restart the local server.".to_string(),
+            r"[INFO] Press '\' to toggle server log view.".to_string(),
         ];
 
         Self {
-            log_messages: mock_logs,
+            log_messages,
             servers,
             local_server_state: LocalServerState::Stopped,
+            current_view: CurrentView::ServerList,
+            local_server_logs,
         }
     }
 
@@ -60,7 +71,11 @@ pub struct Tui {
 }
 
 impl Tui {
-    pub fn new(servers: Vec<ServerInfo>, command_tx: mpsc::Sender<ServerCommand>) -> io::Result<Self> {
+    pub fn new(
+        servers: Vec<ServerInfo>,
+        local_server_logs: Arc<Mutex<Vec<String>>>,
+        command_tx: mpsc::Sender<ServerCommand>,
+    ) -> io::Result<Self> {
         let backend = CrosstermBackend::new(stdout());
         let mut terminal = Terminal::new(backend)?;
         enable_raw_mode()?;
@@ -68,7 +83,7 @@ impl Tui {
         terminal.clear()?;
         Ok(Self {
             terminal,
-            app_state: AppState::new(servers),
+            app_state: AppState::new(servers, local_server_logs),
             command_tx,
         })
     }
@@ -84,6 +99,12 @@ impl Tui {
                 if key.kind == KeyEventKind::Press {
                     match key.code {
                         KeyCode::Char('q') => return Ok(true),
+                        KeyCode::Char('\\') => {
+                            self.app_state.current_view = match self.app_state.current_view {
+                                CurrentView::ServerList => CurrentView::LocalServerLog,
+                                CurrentView::LocalServerLog => CurrentView::ServerList,
+                            };
+                        }
                         KeyCode::Char('s') => {
                             if self.app_state.local_server_state == LocalServerState::Running {
                                 self.command_tx.try_send(ServerCommand::Stop).ok();
@@ -117,16 +138,24 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(5), // For the local server widget
-            Constraint::Min(0),    // For the server list
-            Constraint::Length(5), // For the log pane
+            Constraint::Min(0),    // For the main view (server list or log)
+            Constraint::Length(5), // For the client log pane
         ])
         .split(frame.area());
 
     let local_server_widget = local_server::render(&app_state.local_server_state);
     frame.render_widget(local_server_widget, main_layout[0]);
 
-    let server_list = servers::render_server_list(&app_state.servers);
-    frame.render_widget(server_list, main_layout[1]);
+    match app_state.current_view {
+        CurrentView::ServerList => {
+            let server_list = servers::render_server_list(&app_state.servers);
+            frame.render_widget(server_list, main_layout[1]);
+        }
+        CurrentView::LocalServerLog => {
+            let log_view = log_view::render(&app_state.local_server_logs);
+            frame.render_widget(log_view, main_layout[1]);
+        }
+    }
 
     let log_pane = render_log_pane(app_state);
     frame.render_widget(log_pane, main_layout[2]);
@@ -134,5 +163,5 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
 
 fn render_log_pane<'a>(app_state: &'a AppState) -> Paragraph<'a> {
     let log_text = app_state.log_messages.join("\n");
-    Paragraph::new(log_text).block(Block::default().title("Log").borders(Borders::ALL))
+    Paragraph::new(log_text).block(Block::default().title("Client Log").borders(Borders::ALL))
 }

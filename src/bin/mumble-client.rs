@@ -3,14 +3,17 @@ use mumble::{
     embed, lan,
     ui::client::{LocalServerState, ServerCommand, Tui},
 };
+use std::sync::{Arc, Mutex};
 use tokio::{
     sync::{mpsc, oneshot},
     task,
 };
 
-async fn start_server_task() -> (task::JoinHandle<Result<()>>, oneshot::Sender<()>) {
+async fn start_server_task(
+    log_buffer: Arc<Mutex<Vec<String>>>,
+) -> (task::JoinHandle<Result<()>>, oneshot::Sender<()>) {
     let (shutdown_tx, shutdown_rx) = oneshot::channel();
-    let handle = task::spawn(embed::run_embedded_server(shutdown_rx));
+    let handle = task::spawn(embed::run_embedded_server(log_buffer, shutdown_rx));
     (handle, shutdown_tx)
 }
 
@@ -18,8 +21,9 @@ async fn start_server_task() -> (task::JoinHandle<Result<()>>, oneshot::Sender<(
 async fn main() -> Result<()> {
     let servers = lan::fetch_servers();
     let (command_tx, mut command_rx) = mpsc::channel(10);
+    let server_log_buffer = Arc::new(Mutex::new(Vec::new()));
 
-    let mut tui = Tui::new(servers, command_tx)?;
+    let mut tui = Tui::new(servers, Arc::clone(&server_log_buffer), command_tx)?;
 
     let mut server_handle: Option<task::JoinHandle<Result<()>>> = None;
     let mut shutdown_tx: Option<oneshot::Sender<()>> = None;
@@ -40,7 +44,7 @@ async fn main() -> Result<()> {
                     tui.app_state.local_server_state = LocalServerState::Starting;
                     tui.draw()?; // Redraw to show "Starting"
 
-                    let (handle_new, tx_new) = start_server_task().await;
+                    let (handle_new, tx_new) = start_server_task(Arc::clone(&server_log_buffer)).await;
                     server_handle = Some(handle_new);
                     shutdown_tx = Some(tx_new);
                     tui.app_state.local_server_state = LocalServerState::Running;
@@ -59,7 +63,7 @@ async fn main() -> Result<()> {
                             tui.app_state.log("[CMD] Starting server...".to_string());
                             tui.draw()?; // Redraw to show "Starting"
 
-                            let (handle, tx) = start_server_task().await;
+                            let (handle, tx) = start_server_task(Arc::clone(&server_log_buffer)).await;
                             server_handle = Some(handle);
                             shutdown_tx = Some(tx);
                             tui.app_state.local_server_state = LocalServerState::Running;
