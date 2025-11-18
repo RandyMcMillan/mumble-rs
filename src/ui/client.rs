@@ -1,3 +1,5 @@
+use crate::lan::ServerInfo;
+use crate::ui::servers;
 use crossterm::{
     event::{self, Event, KeyCode, KeyEventKind},
     execute,
@@ -5,24 +7,25 @@ use crossterm::{
 };
 use ratatui::{
     prelude::*,
-    widgets::{Block, Borders, Paragraph}
+    widgets::{Block, Borders, Paragraph},
 };
 use std::io::{self, stdout, Stdout};
-use crate::ui::servers;
 
 pub struct AppState {
     log_messages: Vec<String>,
+    servers: Vec<ServerInfo>,
 }
 
 impl AppState {
-    fn new() -> Self {
+    fn new(servers: Vec<ServerInfo>) -> Self {
         let mock_logs = vec![
             "[INFO] Welcome to Mumble!".to_string(),
-            "[INFO] Use arrow keys to navigate.".to_string(),
+            "[INFO] Press 'q' to quit.".to_string(),
         ];
 
         Self {
             log_messages: mock_logs,
+            servers,
         }
     }
 }
@@ -33,7 +36,7 @@ pub struct Tui {
 }
 
 impl Tui {
-    pub fn new() -> io::Result<Self> {
+    pub fn new(servers: Vec<ServerInfo>) -> io::Result<Self> {
         let backend = CrosstermBackend::new(stdout());
         let mut terminal = Terminal::new(backend)?;
         enable_raw_mode()?;
@@ -41,7 +44,7 @@ impl Tui {
         terminal.clear()?;
         Ok(Self {
             terminal,
-            app_state: AppState::new(),
+            app_state: AppState::new(servers),
         })
     }
 
@@ -76,7 +79,7 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
         .constraints([Constraint::Percentage(70), Constraint::Percentage(30)])
         .split(frame.area());
 
-    let server_list = servers::render_server_list();
+    let server_list = servers::render_server_list(&app_state.servers);
     frame.render_widget(server_list, main_layout[0]);
 
     let log_pane = render_log_pane(app_state);

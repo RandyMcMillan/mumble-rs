@@ -7,6 +7,7 @@ use mumble_sys::*;
 pub mod cli;
 pub mod config;
 pub mod db;
+pub mod lan;
 pub mod server;
 pub mod ui;
 
