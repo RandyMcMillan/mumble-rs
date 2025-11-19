@@ -125,6 +125,10 @@ async fn main() -> Result<()> {
                             stopping_handle = server_handle.take();
                         }
                     }
+                    ServerCommand::Connect(info) => {
+                        tui.app_state.log(format!("[CMD] Connecting to {}:{}...", info.host, info.port));
+                        let _ = mumble::connection::connect_to_server(info).await;
+                    }
                 }
             }
         }

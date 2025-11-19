@@ -22,10 +22,17 @@ pub enum LocalServerState {
     Restarting,
 }
 
+#[derive(Debug, Clone)]
+pub struct ConnectionInfo {
+    pub host: String,
+    pub port: u16,
+}
+
 pub enum ServerCommand {
     Start,
     Stop,
     Restart,
+    Connect(ConnectionInfo),
 }
 
 pub enum CurrentView {
@@ -75,7 +82,7 @@ impl AppState {
             "[INFO] Welcome to Mumble!".to_string(),
             "[INFO] Press 'q' to quit, 'Tab' to navigate.".to_string(),
             "[INFO] Use 's' to start/stop and 'r' to restart the local server.".to_string(),
-            r"[INFO] Press '\\' to toggle server log view.".to_string(),
+            r"[INFO] Press '\' to toggle server log view.".to_string(),
         ];
 
         Self {
@@ -180,6 +187,31 @@ impl Tui {
                             }
                             _ => {}
                         },
+                        KeyCode::Enter => {
+                            let mut conn_info = None;
+                            match self.app_state.focused_widget {
+                                FocusedWidget::LanServerList => {
+                                    if let Some(server) = self.app_state.lan_servers.get(self.app_state.selected_lan_server) {
+                                        conn_info = Some(ConnectionInfo {
+                                            host: server.host.clone(),
+                                            port: server.port,
+                                        });
+                                    }
+                                }
+                                FocusedWidget::PublicServerList => {
+                                    if let Some(server) = self.app_state.public_servers.get(self.app_state.selected_public_server) {
+                                        conn_info = Some(ConnectionInfo {
+                                            host: server.host.clone(),
+                                            port: server.port,
+                                        });
+                                    }
+                                }
+                                _ => {}
+                            }
+                            if let Some(info) = conn_info {
+                                self.command_tx.try_send(ServerCommand::Connect(info)).ok();
+                            }
+                        }
                         KeyCode::Char('s') if self.app_state.focused_widget == FocusedWidget::LocalServer => {
                             if self.app_state.local_server_state == LocalServerState::Running {
                                 self.command_tx.try_send(ServerCommand::Stop).ok();

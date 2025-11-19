@@ -6,6 +6,7 @@ use mumble_sys::*;
 
 pub mod cli;
 pub mod config;
+pub mod connection;
 pub mod db;
 pub mod embed;
 pub mod lan;
