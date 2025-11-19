@@ -9,7 +9,7 @@ pub struct ServerInfo {
     pub max_users: u32,
 }
 
-const PUBLIC_SERVER_LIST_URL: &str = "https://servers.mumble.info/v1/list";
+const PUBLIC_SERVER_LIST_URL: &str = "https://mumble.info/v1/list";
 
 pub async fn fetch_servers() -> Result<Vec<ServerInfo>, reqwest::Error> {
     let response = reqwest::get(PUBLIC_SERVER_LIST_URL).await?;

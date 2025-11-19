@@ -42,13 +42,37 @@ async fn main() -> Result<()> {
     let mut shutdown_tx: Option<oneshot::Sender<()>> = None;
     let mut stopping_handle: Option<task::JoinHandle<Result<()>>> = None;
 
+    // In the main loop of src/bin/mumble-client.rs
+    
     loop {
+        // --- New: Check for server task completion/panic ---
+        if let Some(handle) = &server_handle {
+            if handle.is_finished() {
+                let handle = server_handle.take().unwrap();
+                match handle.await {
+                    Ok(Ok(())) => {
+                        // Server stopped gracefully, this is handled by the shutdown logic
+                    }
+                    Ok(Err(e)) => {
+                        tui.app_state.log(format!("[ERROR] Server task failed: {}", e));
+                        tui.app_state.local_server_state = LocalServerState::Stopped;
+                        shutdown_tx.take();
+                    }
+                    Err(e) => {
+                        tui.app_state.log(format!("[ERROR] Server task panicked: {:?}", e));
+                        tui.app_state.local_server_state = LocalServerState::Stopped;
+                        shutdown_tx.take();
+                    }
+                }
+            }
+        }
+    
         // --- Step 1: Check for and finalize any pending shutdowns ---
         if let Some(handle) = &stopping_handle {
             if handle.is_finished() {
                 let handle = stopping_handle.take().unwrap();
                 handle.await??; // Await is now non-blocking and cleans up the task
-
+    
                 if tui.app_state.local_server_state == LocalServerState::Stopping {
                     tui.app_state.local_server_state = LocalServerState::Stopped;
                     tui.app_state.log("[INFO] Server stopped.".to_string());
@@ -56,7 +80,7 @@ async fn main() -> Result<()> {
                     tui.app_state.log("[INFO] Server stopped. Starting again...".to_string());
                     tui.app_state.local_server_state = LocalServerState::Starting;
                     tui.draw()?; // Redraw to show "Starting"
-
+    
                     let (handle_new, tx_new) =
                         start_server_task(Arc::clone(&server_log_buffer)).await;
                     server_handle = Some(handle_new);
@@ -67,7 +91,7 @@ async fn main() -> Result<()> {
                 }
             }
         }
-
+    
         // --- Step 2: Handle commands from the TUI ---
         if stopping_handle.is_none() {
             // Don't process new commands while a stop is pending
@@ -78,7 +102,7 @@ async fn main() -> Result<()> {
                             tui.app_state.local_server_state = LocalServerState::Starting;
                             tui.app_state.log("[CMD] Starting server...".to_string());
                             tui.draw()?; // Redraw to show "Starting"
-
+    
                             let (handle, tx) =
                                 start_server_task(Arc::clone(&server_log_buffer)).await;
                             server_handle = Some(handle);
@@ -107,17 +131,16 @@ async fn main() -> Result<()> {
                 }
             }
         }
-
+    
         // --- Step 3: Draw the UI and handle input ---
         tui.draw()?;
         if tui.handle_events()? {
             break; // Exit loop if 'q' is pressed
         }
-
+    
         // Give the OS a little time to breathe
         tokio::time::sleep(std::time::Duration::from_millis(50)).await;
     }
-
     // --- Final cleanup on exit ---
     if let Some(tx) = shutdown_tx.take() {
         tx.send(()).ok();

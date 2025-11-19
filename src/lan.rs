@@ -16,6 +16,7 @@ pub struct ServerInfo {
 const SERVICE_TYPE: &str = "_mumble._tcp.local.";
 
 pub async fn discover_servers() -> Vec<ServerInfo> {
+    println!("[DEBUG] Starting LAN server discovery...");
     let mut servers = HashMap::new();
 
     if let Ok(stream) = mdns::discover::all(SERVICE_TYPE, Duration::from_secs(1)) {
@@ -28,6 +29,7 @@ pub async fn discover_servers() -> Vec<ServerInfo> {
         pin_mut!(stream_with_timeout);
 
         while let Some(Ok(response)) = stream_with_timeout.next().await {
+            println!("[DEBUG] mDNS response: {:?}", response);
             let mut host = None;
             let mut port = None;
             let mut ip = None;
@@ -59,10 +61,11 @@ pub async fn discover_servers() -> Vec<ServerInfo> {
                     ip,
                     port,
                 };
+                println!("[DEBUG] Found LAN server: {:?}", server_info);
                 servers.insert(server_info.host.clone(), server_info);
             }
         }
     }
-
+    println!("[DEBUG] LAN server discovery finished.");
     servers.into_values().collect()
 }
