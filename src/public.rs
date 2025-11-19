@@ -1,18 +1,28 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+include!(concat!(env!("OUT_DIR"), "/public_server_list.rs"));
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ServerInfo {
     pub name: String,
+    #[serde(rename = "ip")]
     pub host: String,
     pub port: u16,
+    // These fields are not in the XML, but we keep them for compatibility with the UI
+    #[serde(default)]
     pub users: u32,
+    #[serde(default)]
     pub max_users: u32,
 }
 
-const PUBLIC_SERVER_LIST_URL: &str = "https://mumble.info/v1/list";
+#[derive(Debug, Deserialize)]
+struct Servers {
+    #[serde(rename = "server", default)]
+    servers: Vec<ServerInfo>,
+}
 
-pub async fn fetch_servers() -> Result<Vec<ServerInfo>, reqwest::Error> {
-    let response = reqwest::get(PUBLIC_SERVER_LIST_URL).await?;
-    let servers = response.json::<Vec<ServerInfo>>().await?;
-    Ok(servers)
+pub async fn fetch_servers() -> Result<Vec<ServerInfo>, anyhow::Error> {
+    let servers: Servers = quick_xml::de::from_str(PUBLIC_SERVER_LIST_XML)?;
+    Ok(servers.servers)
 }

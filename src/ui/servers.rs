@@ -37,10 +37,10 @@ pub fn render_lan_server_list<'a>(
             Block::default()
                 .title("LAN Servers")
                 .borders(Borders::ALL)
-                .border_style(if has_focus {
-                    Style::default().fg(Color::Yellow)
+                .border_type(if has_focus {
+                    ratatui::widgets::BorderType::Double
                 } else {
-                    Style::default()
+                    ratatui::widgets::BorderType::Plain
                 }),
         )
 }
@@ -77,10 +77,10 @@ pub fn render_public_server_list<'a>(
             Block::default()
                 .title("Public Servers")
                 .borders(Borders::ALL)
-                .border_style(if has_focus {
-                    Style::default().fg(Color::Yellow)
+                .border_type(if has_focus {
+                    ratatui::widgets::BorderType::Double
                 } else {
-                    Style::default()
+                    ratatui::widgets::BorderType::Plain
                 }),
         )
 }

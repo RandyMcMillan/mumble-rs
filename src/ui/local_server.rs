@@ -39,10 +39,10 @@ pub fn render(state: &LocalServerState, has_focus: bool) -> Paragraph<'static> {
             Block::default()
                 .title("Local Server")
                 .borders(Borders::ALL)
-                .border_style(if has_focus {
-                    Style::default().fg(Color::Yellow)
+                .border_type(if has_focus {
+                    ratatui::widgets::BorderType::Double
                 } else {
-                    Style::default()
+                    ratatui::widgets::BorderType::Plain
                 }),
         )
         .alignment(Alignment::Center)

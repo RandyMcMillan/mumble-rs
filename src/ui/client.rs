@@ -162,12 +162,16 @@ impl Tui {
                         },
                         KeyCode::Down => match self.app_state.focused_widget {
                             FocusedWidget::LanServerList => {
-                                if self.app_state.selected_lan_server < self.app_state.lan_servers.len() - 1 {
+                                if !self.app_state.lan_servers.is_empty()
+                                    && self.app_state.selected_lan_server < self.app_state.lan_servers.len() - 1
+                                {
                                     self.app_state.selected_lan_server += 1;
                                 }
                             }
                             FocusedWidget::PublicServerList => {
-                                if self.app_state.selected_public_server < self.app_state.public_servers.len() - 1 {
+                                if !self.app_state.public_servers.is_empty()
+                                    && self.app_state.selected_public_server < self.app_state.public_servers.len() - 1
+                                {
                                     self.app_state.selected_public_server += 1;
                                 }
                             }
@@ -260,10 +264,10 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
                     Block::default()
                         .title("Chat")
                         .borders(Borders::ALL)
-                        .border_style(if app_state.focused_widget == FocusedWidget::Content {
-                            Style::default().fg(Color::Yellow)
+                        .border_type(if app_state.focused_widget == FocusedWidget::Content {
+                            ratatui::widgets::BorderType::Double
                         } else {
-                            Style::default()
+                            ratatui::widgets::BorderType::Plain
                         }),
                 )
                 .scroll((app_state.content_scroll as u16, 0));
