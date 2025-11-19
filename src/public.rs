@@ -3,11 +3,12 @@ use serde::Deserialize;
 include!(concat!(env!("OUT_DIR"), "/public_server_list.rs"));
 
 #[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ServerInfo {
+    #[serde(rename = "@name")]
     pub name: String,
-    #[serde(rename = "ip")]
+    #[serde(rename = "@ip")]
     pub host: String,
+    #[serde(rename = "@port")]
     pub port: u16,
     // These fields are not in the XML, but we keep them for compatibility with the UI
     #[serde(default)]

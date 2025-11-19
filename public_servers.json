@@ -1,0 +1,265 @@
+<?xml version='1.0' standalone='yes'?>
+<servers>
+	<server name="`KEDAI KOPI NUSANTARA`" ca="0" continent_code="AS" country="Indonesia" country_code="ID" ip="warungkopi.ddns.my.id" port="64738" region="Jawa Timur" url="http://www.warungkopi.com/" />
+	<server name="`Одесский Радио Линк`" ca="1" continent_code="EU" country="Ukraine" country_code="UA" ip="mb.odradio.link" port="64738" region="Odeska oblast" url="https://odradio.link" />
+	<server name="`Україна`" ca="1" continent_code="EU" country="Ukraine" country_code="UA" ip="qso.odradio.link" port="64738" region="Odeska oblast" url="https://uaradio.link" />
+	<server name="_     INDONESIA VOICE     _" ca="0" continent_code="AS" country="Indonesia" country_code="ID" ip="id.samto.my.id" port="64738" region="Jakarta Raya" url="http://www.mumble.info/" />
+	<server name="_____RADIO NGEBRIK SANTAI____" ca="0" continent_code="AS" country="Indonesia" country_code="ID" ip="id.samto.my.id" port="65155" region="Jakarta Raya" url="http://www.mumble.info/" />
+	<server name="_001 Free Mumble Server_" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.b9r.de" port="64738" region="Berlin" url="https://www.b9r.de" />
+	<server name="_Dordogne &amp; Suisse Ham Radio Spirit_" ca="0" continent_code="EU" country="France" country_code="FR" ip="dhrs.ddns.net" port="64738" region="Hauts-de-France" url="https://f4iaa.fr/blog/dhrs" />
+	<server name="_Les Amis De La Radio_" ca="0" continent_code="EU" country="France" country_code="FR" ip="ladlr13.fr" port="64738" region="Ile-de-France" url="http://www.mumble.info/" />
+	<server name="! Мир Танков | WOT - Публичный !" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="mumble.z3n.ru" port="64738" region="Novosibirskaya oblast'" url="https://mumble.z3n.ru/" />
+	<server name="'      P O C" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="poc.mumble.my.id" port="64738" region="Singapore" url="http://www.mumble.info/" />
+	<server name="'     SUARA INDONESIA     '" ca="0" continent_code="AS" country="Indonesia" country_code="ID" ip="id.samto.my.id" port="64777" region="Jakarta Raya" url="http://www.mumble.info/" />
+	<server name="[DM] The Place Of Dangerous Minds! (ENGLISH)" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble1.dangerous-minds.com" port="64738" region="New Jersey" url="http://www.dangerous-minds.com" />
+	<server name="[FR] Blabla Linux" ca="0" continent_code="EU" country="Belgium" country_code="BE" ip="mumble.blablalinux.be" port="64738" region="Brussels Hoofdstedelijk Gewest" url="https://link.blablalinux.be" />
+	<server name="[FR] MetalBanana" ca="1" continent_code="EU" country="Belgium" country_code="BE" ip="mumble.metalbanana.net" port="64738" region="Brabant wallon" url="https://mumble.metalbanana.net" />
+	<server name="[Mumble.ru] Russian Public Server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="srv.mumble.ru" port="64738" region="Sachsen" url="https://mumble.ru/" />
+	<server name="[public] drink miso soup" ca="0" continent_code="EU" country="Netherlands (Kingdom of the)" country_code="NL" ip="158.101.212.215" port="64738" region="Noord-Holland" url="158.101.212.215" />
+	<server name="[RedXen] Good software lasts long!" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="redxen.eu" port="64738" region="Bayern" url="https://redxen.eu/" />
+	<server name="[TASF]Telefragged" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.advmapper.com" port="64738" region="New Jersey" url="https://mumble.advmapper.com" />
+	<server name="[Z]Group Mumble Sunucusu | Z-TR.Com" ca="0" continent_code="EU" country="France" country_code="FR" ip="play.z-tr.com" port="64738" region="Hauts-de-France" url="https://z-tr.com" />
+	<server name="@ - WebSdr Bordeaux - @" ca="0" continent_code="EU" country="France" country_code="FR" ip="mumble.websdrbordeaux.fr" port="64738" region="Nouvelle-Aquitaine" url="www.websdrbordeaux.fr" />
+	<server name="+FLOSS" ca="1" continent_code="EU" country="France" country_code="FR" ip="masfloss.net" port="64738" region="Ile-de-France" url="https://masfloss.net/" />
+	<server name="&lt;C&gt;" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="contraclan.mynetgear.com" port="64738" region="Massachusetts" url="http://www.poonbox.com" />
+	<server name="===| TX-RX.DE |===" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.tx-rx.de" port="64738" region="Nordrhein-Westfalen" url="http://tx-rx.de" />
+	<server name="&gt;&gt;&gt;&gt;-515930-&lt;&lt;&lt;&lt;" ca="0" continent_code="EU" country="France" country_code="FR" ip="51593.ddns.net" port="64738" region="Ile-de-France" url="http://www.mumble.info/" />
+	<server name="★Yoruka's World★" ca="1" continent_code="EU" country="Finland" country_code="FI" ip="yorukasworld.org" port="64739" region="Uusimaa" url="https://yorukasworld.org/" />
+	<server name="☎[RU] Родные Берега" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="95.79.31.47" port="64738" region="Nizhegorodskaya oblast'" url="http://publist-registration.mumble.info" />
+	<server name="0_SKYN3T" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="skyn3t.lol" port="64738" region="Missouri" url="https://skyn3t.lol/" />
+	<server name="00 Business Networking &amp; Gaming" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="pub.srv.bringyourwallet.com" port="64738" region="Oregon" url="https://bringyourwallet.com/bn" />
+	<server name="0今 INSPIRASI KELUARGA NUSANTARA 今0" ca="1" continent_code="AS" country="Singapore" country_code="SG" ip="ikndomain.my.id" port="64738" region="Singapore" url="https://ikndomain.my.id/" />
+	<server name="A B I" ca="0" continent_code="AS" country="Indonesia" country_code="ID" ip="kangsefi.com" port="64738" region="Yogyakarta" url="http://www.mumble.info/" />
+	<server name="A reallyaweso.me Mumble server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="reallyaweso.me" port="64738" region="Baden-Wurttemberg" url="https://reallyaweso.me/" />
+	<server name="AInet" ca="0" continent_code="EU" country="Netherlands (Kingdom of the)" country_code="NL" ip="mumble.ainet.us" port="64738" region="Noord-Holland" url="https://anitalink.com/" />
+	<server name="AKAI(MGATROPA Mumble Server)CrossfirePH" ca="0" continent_code="NA" country="Canada" country_code="CA" ip="15.235.181.136" port="31467" region="Quebec" url="https://lemehost.com/" />
+	<server name="AkhIL's Mumble Server" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="mumble.akhil.ru" port="64738" region="Moskva" url="https://mumble.akhil.ru" />
+	<server name="Alokal" ca="1" continent_code="EU" country="Austria" country_code="AT" ip="alokal.eu" port="64738" region="Steiermark" url="https://alokal.eu/" />
+	<server name="Amarantos" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="amarantos.vedetas.org" port="64738" region="Sachsen" url="https://mariavilani.vedetas.org" />
+	<server name="Amarok's Sanbox" ca="0" continent_code="EU" country="Poland" country_code="PL" ip="amarok.mooo.com" port="64738" region="Mazowieckie" url="http://amarok.mooo.com" />
+	<server name="Ape3000.com" ca="1" continent_code="EU" country="Finland" country_code="FI" ip="ape3000.com" port="64738" region="Uusimaa" url="http://ape3000.com/" />
+	<server name="Apple Dumpling Hideout" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="dallas-murmur.nfoservers.com" port="4950" region="Texas" url="gunnys.murmur.nfoservers.com:4950" />
+	<server name="ARMs Headquarters" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="armshq.org" port="49572" region="California" url="http://www.armshq.org" />
+	<server name="Authentic NY Street Hotdogs Mumble Server" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.kruemel.org" port="64738" region="Baden-Wurttemberg" url="https://www.kruemel.org/" />
+	<server name="Avarice &amp; Ambition" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="73.128.202.208" port="64739" region="Virginia" url="http://www.mumble.info/" />
+	<server name="axel-freiburg.de" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="axel-freiburg.de" port="64738" region="Baden-Wurttemberg" url="https://axel-freiburg.de/" />
+	<server name="Bahana Nusa Persada" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="heart-billing.gl.at.ply.gg" port="41994" region="Nevada" url="http://www.mumble.info/" />
+	<server name="BALI POC 1" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="balipoc.my.id" port="64001" region="Singapore" url="http://www.mumble.info/" />
+	<server name="BALI POC 2" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="balipoc.my.id" port="64002" region="Singapore" url="http://www.mumble.info/" />
+	<server name="BALI POC 3" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="balipoc.my.id" port="64003" region="Singapore" url="http://www.mumble.info/" />
+	<server name="Ball Holdings Mumble" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.ball.holdings" port="64738" region="Oregon" url="https://ball.holdings" />
+	<server name="Baloona's Mumble Server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="baloona.de" port="64738" region="Baden-Wurttemberg" url="https://baloona.de" />
+	<server name="baratilvara.com" ca="1" continent_code="EU" country="Iceland" country_code="IS" ip="mumble.baratilvara.com" port="64738" region="Hofudborgarsvaedi" url="https://www.baratilvara.com/" />
+	<server name="Berlin" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.totalnutzlos.de" port="64738" region="Baden-Wurttemberg" url="mumble.totalnutzlos.de" />
+	<server name="BLAMBANGAN ONLINE" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="mumble.my.id" port="64738" region="Singapore" url="http://www.mumble.info/" />
+	<server name="Blood Rose" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="blood-rose.ru" port="64738" region="Arkhangel'skaya oblast'" url="https://blood-rose.ru/" />
+	<server name="bnw.im" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="jugregator.org" port="64737" region="Sankt-Peterburg" url="https://mmbl.jugregator.org" />
+	<server name="Brian's Mumble Server" ca="1" continent_code="AS" country="Singapore" country_code="SG" ip="mumble.brian-wee.com" port="10" region="Singapore" url="https://brian-wee.com/" />
+	<server name="C2001 Testserver" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="voice.mumble-funk.de" port="30001" region="Berlin" url="http://www.mumble-funk.de" />
+	<server name="Caspervk's Public Mumble" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.caspervk.net" port="64738" region="Nordrhein-Westfalen" url="https://mumble.caspervk.net" />
+	<server name="cat2gether Official Server" ca="1" continent_code="EU" country="Poland" country_code="PL" ip="mumble.gameone.dev" port="64738" region="Pomorskie" url="https://cat2gether.com/" />
+	<server name="catboy.to" ca="0" continent_code="EU" country="Switzerland" country_code="CH" ip="190.211.255.218" port="64738" region="Zurich" url="https://catboy.to/" />
+	<server name="Chalec" ca="1" continent_code="EU" country="France" country_code="FR" ip="audio.chalec.org" port="64738" region="Ile-de-France" url="https://www.chalec.org/services/audio/" />
+	<server name="Chaos-WG" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="p-schwarz.de" port="64738" region="Berlin" url="http://www.p-schwarz.de/" />
+	<server name="chaos.jetzt" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="chaos.jetzt" port="64738" region="Baden-Wurttemberg" url="https://chaos.jetzt/" />
+	<server name="Chaosweb Public Server" ca="0" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="mumble.chaosweb.in" port="64738" region="England" url="https://www.chaosweb.in" />
+	<server name="ChatAlarm" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.chatalarm.de" port="64738" region="Berlin" url="http://mumble.chatalarm.de/" />
+	<server name="Chilemasto Mumble" ca="1" continent_code="SA" country="Chile" country_code="CL" ip="chilemasto.casa" port="64738" region="Region Metropolitana de Santiago" url="https://home.chilemasto.casa/" />
+	<server name="Claytonia Gaming" ca="0" continent_code="NA" country="Canada" country_code="CA" ip="claytonia.net" port="64738" region="Quebec" url="https://claytonia.net/" />
+	<server name="Code Magenta" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="codemagenta.net" port="64738" region="Missouri" url="http://www.mumble.info/" />
+	<server name="coding4.coffee" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.coding4.coffee" port="64738" region="Sachsen" url="https://mumble.coding4.coffee" />
+	<server name="CORNDOWN PRANK CALLS" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="mumble.corndown.com" port="64738" region="Illinois" url="http://www.corndown.com/" />
+	<server name="Cours E2L Ivry" ca="1" continent_code="EU" country="France" country_code="FR" ip="murmur.e2li.org" port="64738" region="Hauts-de-France" url="https://murmur.e2li.org/" />
+	<server name="cuqmbr's Mumble server" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="mumble.cuqmbr.xyz" port="64738" region="Rostovskaya oblast'" url="https://cuqmbr.xyz" />
+	<server name="DanishDigitalRadioNet" ca="0" continent_code="EU" country="Denmark" country_code="DK" ip="m.ddrnet.dk" port="64738" region="Sjaelland" url="https://www.ddrnet.dk/" />
+	<server name="darkcat" ca="0" continent_code="NA" country="Canada" country_code="CA" ip="mumble.darkcat.ca" port="64738" region="Ontario" url="https://robertsspaceindustries.com/en/orgs/PEGAIN" />
+	<server name="dazoe" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.dazoe.net" port="64738" region="Missouri" url="https://dazoe.net/" />
+	<server name="deltaquadrant.org" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="deltaquadrant.org" port="64738" region="Bayern" url="https://deltaquadrant.org/" />
+	<server name="Deutscher Funk Radio Club" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="dfrc.spdns.de" port="64738" region="Sachsen" url="http://www.dcbrc.de" />
+	<server name="DIGITAL LINK BALI" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="dlb.my.id" port="64750" region="Singapore" url="http://www.mumble.info/" />
+	<server name="DIGITAL RADIO NASIONAL" ca="1" continent_code="AS" country="Indonesia" country_code="ID" ip="mumble.nasional.online" port="64738" region="Sulawesi Selatan" url="https://amatir.latimojong.com" />
+	<server name="DIGITAL SAHABAT NUSANTARA" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="dsn.rhc.my.id" port="64741" region="Singapore" url="http://www.mumble.info/" />
+	<server name="Disharmony.fi Mumble Server" ca="0" continent_code="EU" country="Finland" country_code="FI" ip="disharmony.fi" port="64738" region="Uusimaa" url="http://disharmony.fi" />
+	<server name="Dons Only" ca="0" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="mumble.fruityten.co.uk" port="64738" region="England" url="mumble.fruityten.co.uk" />
+	<server name="dooc-clan.de" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="dooc-clan.de" port="64738" region="Baden-Wurttemberg" url="http://dooc-clan.de/" />
+	<server name="DotA2 german [location Karlsruhe]" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.christoph-mayer.net" port="64738" region="Baden-Wurttemberg" url="https://mumble.christoph-mayer.net/" />
+	<server name="Dragon Nest 龍之谷 龙之谷 드래곤네스트" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="67.230.188.55" port="4738" region="California" url="http://www.mumble.info/" />
+	<server name="drifty's survur" ca="1" continent_code="AS" country="India" country_code="IN" ip="mumble.drifty.win" port="64738" region="Telangana" url="drifty.win" />
+	<server name="dstyleb" ca="0" continent_code="AS" country="China" country_code="CN" ip="debian.dstyleb.xyz" port="64738" region="Heilongjiang" url="http://debian.dstyleb.xyz/" />
+	<server name="Duion.com - Free Public Server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="duion.com" port="64738" region="Sachsen" url="http://duion.com/" />
+	<server name="E-l33t.org Public Mumble Server" ca="0" continent_code="OC" country="Australia" country_code="AU" ip="mumble.e-l33t.org" port="64738" region="New South Wales" url="http://mumble.e-l33t.org" />
+	<server name="ElBinario" ca="1" continent_code="EU" country="Spain" country_code="ES" ip="mumble.elbinario.net" port="64738" region="Catalunya" url="https://mumble.elbinario.net/" />
+	<server name="Esoteric Vibrations voiceposting edition" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="skipper.blue" port="64738" region="New Jersey" url="https://skipper.blue" />
+	<server name="FastPath.fr" ca="0" continent_code="EU" country="France" country_code="FR" ip="fastpath.fr" port="64738" region="Ile-de-France" url="http://www.fastpath.fr" />
+	<server name="Fight Club" ca="0" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="178.62.102.148" port="50955" region="England" url="https://www.mumbleme.com" />
+	<server name="FischBytes Official Mumble" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.fischbytes.de" port="64738" region="Baden-Wurttemberg" url="http://www.fischbytes.de" />
+	<server name="floppa.cloud Mumble Server" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.floppa.cloud" port="64738" region="Minnesota" url="https://floppa.cloud/" />
+	<server name="Foxwells Garden" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="wheelbarrow.foxwells.garden" port="64738" region="Oregon" url="https://foxwells.garden" />
+	<server name="Free Mumble Server | swabek.de" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="swabek.de" port="64738" region="Hamburg" url="https://www.mumble.info/" />
+	<server name="Freifunk Münsterland" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.freifunk-muensterland.de" port="64738" region="Sachsen" url="https://freifunk-muensterland.de" />
+	<server name="Friendly Linux Players" ca="1" continent_code="EU" country="Finland" country_code="FI" ip="mumble.flip.earth" port="64738" region="Uusimaa" url="https://friendlylinuxplayers.org" />
+	<server name="G0HLJ Mumble Server" ca="0" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="g0hlj.co.uk" port="64738" region="England" url="https://www.g0hlj.co.uk" />
+	<server name="G420.EU | Proximity Voice Chat | Asseto Corsa | discord.gg/yRuH2dXWHV | EU" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="176.9.82.158" port="64738" region="Sachsen" url="http://discord.gg/yRuH2dXWHV/" />
+	<server name="GAGASHA MUMBLE SERVER" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="mumble.gagasha.ru" port="64738" region="Moskva" url="https://www.gagasha.ru/" />
+	<server name="Game Club Lé Brööt" ca="0" continent_code="EU" country="Finland" country_code="FI" ip="mumble.ioio.fi" port="64738" region="Pirkanmaa" url="https://tuhismedia.fi/" />
+	<server name="Game Club Lé Brööt Kaivos Edition" ca="0" continent_code="EU" country="Finland" country_code="FI" ip="kaivos.tuhismedia.fi" port="64738" region="Pirkanmaa" url="http://kaivos.tuhismedia.fi" />
+	<server name="GAMEi" ca="0" continent_code="AS" country="Thailand" country_code="TH" ip="freespeak.ddns.net" port="64738" region="Krung Thep Maha Nakhon" url="http://freespeak.ddns.net" />
+	<server name="GAMEi 2" ca="0" continent_code="AS" country="Thailand" country_code="TH" ip="gamei.ddns.net" port="64738" region="Lop Buri" url="http://gamei.ddns.net" />
+	<server name="GameMania" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.gamemania.org" port="42069" region="Sachsen" url="https://gamemania.org" />
+	<server name="gato top" ca="1" continent_code="SA" country="Brazil" country_code="BR" ip="gato.top" port="64738" region="Sao Paulo" url="https://gato.top" />
+	<server name="gg.illwieckz.net { le frag courtois }" ca="0" continent_code="EU" country="France" country_code="FR" ip="gg.illwieckz.net" port="64738" region="Ile-de-France" url="http://gg.illwieckz.net/" />
+	<server name="Glamaphones" ca="0" continent_code="OC" country="New Zealand" country_code="NZ" ip="glamaphones.mumble.co.nz" port="64813" region="Auckland" url="http://mumble.sourceforge.net/" />
+	<server name="Good server 24/7" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="server-site.ru" port="48777" region="Krasnoyarskiy kray" url="https://server-site.ru" />
+	<server name="GroovyExpress Mumble Server" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="groovyexpress.com" port="64738" region="Virginia" url="www.groovyexpress.com" />
+	<server name="Hackzogtum Coburg" ca="1" continent_code="EU" country="Finland" country_code="FI" ip="mumble.hackzogtum-coburg.de" port="64738" region="Uusimaa" url="https://www.hackzogtum-coburg.de/" />
+	<server name="Harsh" ca="0" continent_code="OC" country="New Zealand" country_code="NZ" ip="harsh.mumble.co.nz" port="64812" region="Auckland" url="http://mumble.sourceforge.net/" />
+	<server name="Hauptbahnhof" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="exitnode.ddns.net" port="9986" region="Nordrhein-Westfalen" url="https://exitnode.ddns.net/" />
+	<server name="Hectics Mumble Server" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.zock-server.de" port="64738" region="Sachsen" url="http://www.zock-server.de" />
+	<server name="Hiddensee ☼" ca="1" continent_code="EU" country="Austria" country_code="AT" ip="mumble.vier.beer" port="64738" region="Wien" url="https://en.wikipedia.org/wiki/Hiddensee" />
+	<server name="HIDROGLOBUS" ca="1" continent_code="EU" country="Hungary" country_code="HU" ip="hidroglobus.com" port="64738" region="Budapest" url="https://theuselessweb.com/" />
+	<server name="High Five Boys" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="100.0.7.221" port="64738" region="Massachusetts" url="https://mumble.highfiveboys.com" />
+	<server name="HIGH OCTANE GAMEPLAY" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="glahcks.com" port="64738" region="Baden-Wurttemberg" url="https://glahcks.com" />
+	<server name="Hoka Hai Tribe" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="64.150.146.236" port="64738" region="South Carolina" url="https://steamcommunity.com/groups/HokaHaiTribe" />
+	<server name="Holidev Mumble Server" ca="1" continent_code="EU" country="Netherlands (Kingdom of the)" country_code="NL" ip="mumble.holidev.net" port="64738" region="Noord-Holland" url="https://www.holidev.net/" />
+	<server name="Huggenknubbels Spielewiese" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="knubbel.me" port="64738" region="Hessen" url="https://huggenknubbel.de" />
+	<server name="Hulkamania" ca="0" continent_code="EU" country="Lithuania" country_code="LT" ip="88.223.92.73" port="64738" region="Kauno apskritis" url="https://octaviamelody.co.uk" />
+	<server name="HuLuX2 Community" ca="0" continent_code="AS" country="Taiwan (Province of China)" country_code="TW" ip="mumble.hulux2.net" port="64738" region="Taipei" url="http://hulux2.net/" />
+	<server name="hybridlabs.pro" ca="1" continent_code="EU" country="Netherlands (Kingdom of the)" country_code="NL" ip="hybridlabs.pro" port="64738" region="Noord-Holland" url="hybridlabs.pro" />
+	<server name="jdelcampo's Mumble server" ca="1" continent_code="EU" country="Spain" country_code="ES" ip="mumble.jdelcampo.eu" port="9090" region="Madrid, Comunidad de" url="https://cloud.jdelcampo.eu" />
+	<server name="Jon's Mumble Server" ca="0" continent_code="EU" country="Finland" country_code="FI" ip="mumble.jlamothe.net" port="64738" region="Uusimaa" url="https://jlamothe.net" />
+	<server name="Kerrigan's lair" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="jugregator.org" port="64739" region="Sankt-Peterburg" url="https://mmbl.jugregator.org" />
+	<server name="Keysin's Mumble Server" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="keysin.eu" port="64738" region="Niedersachsen" url="https://srgl.one" />
+	<server name="KillOnDemand | UK Public Server" ca="1" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="killondemand.co.uk" port="64738" region="England" url="https://www.killondemand.co.uk/" />
+	<server name="King Beowulf's Gamers Hermitage" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="mumble.linuxgalaxy.org" port="64738" region="Washington" url="https://www.linuxgalaxy.org" />
+	<server name="kisswen" ca="0" continent_code="AS" country="China" country_code="CN" ip="ts.kisswen.com" port="64738" region="Sichuan" url="http://www.mumble.info/" />
+	<server name="KOMUNIKASI RAKYAT INDONESIA" ca="0" continent_code="AS" country="Indonesia" country_code="ID" ip="id.samto.my.id" port="64755" region="Jakarta Raya" url="http://www.mumble.info/" />
+	<server name="KrassChris und Plottis Mumble Server" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="xplod.de" port="64738" region="Baden-Wurttemberg" url="http://www.xplod.de/" />
+	<server name="lalala" ca="1" continent_code="AS" country="China" country_code="CN" ip="lalala.v6.navy" port="64738" region="Beijing" url="https://www.google.com" />
+	<server name="Le Relais du Var" ca="0" continent_code="EU" country="France" country_code="FR" ip="ledoc.ddns.net" port="64738" region="Auvergne-Rhone-Alpes" url="http://www.mumble.info/" />
+	<server name="Linux Gaming Association" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="linux-gaming.org" port="64738" region="Hessen" url="https://linux-gaming.org" />
+	<server name="Linux Gaming Australia 24/7" ca="0" continent_code="OC" country="Australia" country_code="AU" ip="1.40.251.199" port="64738" region="New South Wales" url="http://www.mumble.info/" />
+	<server name="Linux Support and some more" ca="1" continent_code="EU" country="Finland" country_code="FI" ip="www.interhacktive.de" port="64738" region="Uusimaa" url="https://www.interhacktive.de" />
+	<server name="Luanti" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="mumble.luanti.ru" port="64738" region="Sankt-Peterburg" url="https://luanti.ru/" />
+	<server name="LUG Mumble Server" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="131.179.104.10" port="64738" region="California" url="http://www.mumble.info/" />
+	<server name="m.rbn.gr Public [DE-FRA1|AS48314]" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="m.rbn.gr" port="64738" region="Hessen" url="http://www.robingroppe.de/" />
+	<server name="Magical Rocks" ca="0" continent_code="EU" country="Austria" country_code="AT" ip="magical.rocks" port="64738" region="Wien" url="http://www.mumble.info/" />
+	<server name="MamkuEbal.ru" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="mamkuebal.ru" port="64738" region="Moskovskaya oblast'" url="https://mamkuebal.ru/" />
+	<server name="Masochism Cafe" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.subone.space" port="64738" region="California" url="https://mumble.subone.space/" />
+	<server name="mb.juckt.xyz" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mb.juckt.xyz" port="64738" region="Hessen" url="https://juckt.xyz/" />
+	<server name="meatfactory.net - Mumble" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.meatfactory.net" port="64738" region="Nordrhein-Westfalen" url="http://www.meatfactory.net" />
+	<server name="Mêlée Island" ca="1" continent_code="EU" country="France" country_code="FR" ip="mumble.bandsal.at" port="64738" region="Hauts-de-France" url="http://www.discounterstrike.de/" />
+	<server name="Melonmancy" ca="0" continent_code="nil" country="-" country_code="-" ip="mumble.melonmancy.cafe" port="64738" region="-" url="https://melonmancy.cafe" />
+	<server name="Men in Caves GW2 Chat" ca="1" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="mumble.webspider.org" port="8118" region="England" url="http://mumble.webspider.org/" />
+	<server name="Miami Social Club" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="miamisocial.club" port="64738" region="California" url="https://miamisocial.club/" />
+	<server name="mintCast Mumble Server" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="mumble.mintcast.org" port="64738" region="Indiana" url="https://mintcast.org" />
+	<server name="MonkeyTemple" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="91.64.20.248" port="64738" region="Bayern" url="http://www.thundertemple.org" />
+	<server name="Monoculus" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="monocul.us" port="64738" region="Hessen" url="https://monocul.us/" />
+	<server name="MUBI" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="104.154.58.100" port="64738" region="Iowa" url="http://mumble.mubi.us" />
+	<server name="Multi Gaming Forces" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="multi-gaming-forces.de" port="64444" region="Bayern" url="multi-gaming-forces.de" />
+	<server name="Mumble-Funk Hauptserver" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="voice.mumble-funk.de" port="64738" region="Berlin" url="http://www.mumble-funk.de/" />
+	<server name="mumble.3096850.xyz" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.3096850.xyz" port="64738" region="California" url="https://3096850.xyz/" />
+	<server name="Mumble.be" ca="1" continent_code="EU" country="Belgium" country_code="BE" ip="mumble.be" port="64738" region="Brussels Hoofdstedelijk Gewest" url="https://mumble.be" />
+	<server name="mumble.boolshit.de" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.boolshit.de" port="64738" region="Bayern" url="https://mumble.boolshit.de/" />
+	<server name="mumble.epow0.org - der bonker" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="2a01:4f8:13b:2048::101" port="64740" region="Sachsen" url="https://epow0.org/" />
+	<server name="mumble.epow0.org - krampffeld" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.epow0.org" port="42000" region="Sachsen" url="https://mumble.epow0.org" />
+	<server name="mumble.imelik.info" ca="1" continent_code="EU" country="Estonia" country_code="EE" ip="mumble.imelik.info" port="64738" region="Harjumaa" url="https://mumble.imelik.info" />
+	<server name="mumble.psjb.xyz" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.psjb.xyz" port="64738" region="Pennsylvania" url="https://psjb.xyz" />
+	<server name="mumble.skobk.in - Дегенератуша Скобкина" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="mumble.skobk.in" port="64738" region="Moskva" url="https://mumble.skobk.in/" />
+	<server name="Mumbleserver der Imkerei Sehnbruch &amp; Schwirz" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="92.117.76.40" port="64738" region="Baden-Wurttemberg" url="https://sehnbruch.ddns.net" />
+	<server name="Mumbletreff.com" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="voice.mumbletreff.com" port="10012" region="Sachsen" url="https://www.mumbletreff.com" />
+	<server name="MumbleTreff.de Der Talk im Netz" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="voice.mumble-funk.de" port="10012" region="Berlin" url="http://www.mumbletreff.de/" />
+	<server name="Natemologie-Zentrum" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.natenom.de" port="64738" region="Sachsen" url="https://natenom.de/" />
+	<server name="NFOservers.com: Atlanta test server" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="atlanta.murmur.nfoservers.com" port="3040" region="Georgia" url="https://www.nfoservers.com" />
+	<server name="Night Wolf Server(Online Radio 24/7)" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="nightwolf152.ru" port="64738" region="Moskva" url="http://www.mumble.info/" />
+	<server name="not Québec" ca="1" continent_code="NA" country="Canada" country_code="CA" ip="extremelycorporate.ca" port="59411" region="Ontario" url="https://extremelycorporate.ca" />
+	<server name="Offizieller Anoxinon.de Mumble Server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.anoxinon.de" port="64738" region="Sachsen" url="https://anoxinon.de" />
+	<server name="Oficjalny Mumble | ProjectRPG.pl" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="m.projectrpg.pl" port="64738" region="Bayern" url="https://projectrpg.pl" />
+	<server name="Orzknorz" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="orzknorz.de" port="64738" region="Baden-Wurttemberg" url="http://www.mumble.info/" />
+	<server name="PacificDrive" ca="0" continent_code="EU" country="Spain" country_code="ES" ip="212.231.196.191" port="64738" region="Andalucia" url="http://pacificdrive.ddns.net/" />
+	<server name="Pardal Server" ca="0" continent_code="EU" country="Portugal" country_code="PT" ip="gpardal.com" port="64738" region="Lisboa" url="https://www.gpardal.com" />
+	<server name="PDEG.de | Public_Mumble_Server" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="thewire01.pdeg.de" port="64738" region="Hessen" url="http://pdeg.de/" />
+	<server name="pegasi IT-Development" ca="1" continent_code="EU" country="France" country_code="FR" ip="mumble.pegahost.de" port="64780" region="Grand-Est" url="https://mumble.pegahost.de" />
+	<server name="PhanTom" ca="0" continent_code="AS" country="China" country_code="CN" ip="ningjinghai.phantom-pain.club" port="64738" region="Beijing" url="https://robertsspaceindustries.com/orgs/2019624203" />
+	<server name="Pilot_51's server" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="mumble.pilot51.com" port="64738" region="Washington" url="https://pilot51.com" />
+	<server name="Pingstkyrkan Eskilstuna" ca="1" continent_code="EU" country="Sweden" country_code="SE" ip="jesusislord.se" port="64738" region="Vasterbottens lan" url="https://jesusislord.se/" />
+	<server name="Planetcobalt" ca="1" continent_code="EU" country="Switzerland" country_code="CH" ip="vc.planetcobalt.net" port="64738" region="Zurich" url="https://vc.planetcobalt.net/" />
+	<server name="POC BANYUWANGI" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="htpoc.my.id" port="65002" region="Singapore" url="http://www.mumble.info/" />
+	<server name="POC INDONESIA" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="htpoc.my.id" port="65155" region="Singapore" url="http://www.mumble.info/" />
+	<server name="POC JATIM" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="htpoc.my.id" port="65000" region="Singapore" url="http://www.mumble.info/" />
+	<server name="POC NUSANTARA" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="poc.mumble.my.id" port="60000" region="Singapore" url="http://www.mumble.info/" />
+	<server name="pocdd6wg" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="poc.dd6wg.de" port="64738" region="Brandenburg" url="http://poc.dd6wg.de" />
+	<server name="Poridge Club" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="poridge.club" port="64738" region="Moskva" url="https://poridge.club/" />
+	<server name="Public server V4GAME (1)" ca="0" continent_code="EU" country="France" country_code="FR" ip="s1.v4game.com" port="9999" region="Hauts-de-France" url="https://v4game.com/" />
+	<server name="Pugio Mumble server" ca="1" continent_code="EU" country="Netherlands (Kingdom of the)" country_code="NL" ip="2a02:898:62:f6:546f:74ff:fe22:ad" port="64738" region="Noord-Holland" url="http://www.mumble.info/" />
+	<server name="PwNt.dK Public Mumble" ca="1" continent_code="EU" country="France" country_code="FR" ip="voice.pwnt.dk" port="64738" region="Ile-de-France" url="https://pwnt.dk/mumble" />
+	<server name="QSO4YOU.TECH" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.qso4you.tech" port="64738" region="Bayern" url="https://www.qso4you.tech" />
+	<server name="quality" ca="0" continent_code="EU" country="Finland" country_code="FI" ip="94.237.106.204" port="64738" region="Uusimaa" url="https://mumble.info" />
+	<server name="Quasselstube" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.tinyoverflow.me" port="64738" region="Sachsen" url="https://tinyoverflow.me" />
+	<server name="RADIO DIGITAL LINUS" ca="0" continent_code="AS" country="Indonesia" country_code="ID" ip="drnlinus.my.id" port="12119" region="Jawa Barat" url="https://www.umble.info/" />
+	<server name="RADIO PERSAUDARAAN SELAMANYA" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="ss.mumble.my.id" port="64746" region="Singapore" url="http://www.mumble.info/" />
+	<server name="RadioRE" ca="0" continent_code="EU" country="Italy" country_code="IT" ip="37.119.43.159" port="64738" region="Trentino-Alto Adige" url="http://www.mumble.info/" />
+	<server name="RAJAWALI SERVER" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="rajawalinetserver.web.id" port="10007" region="Singapore" url="http://mumble.sourceforge.net/" />
+	<server name="Ramen's Test Mumble Server" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="ast-1.fd.lpki.org" port="64738" region="Moskva" url="https://selectel.com/" />
+	<server name="Rashia Gaming Germany" ca="1" continent_code="EU" country="France" country_code="FR" ip="mumble.rashia.de" port="64738" region="Grand-Est" url="https://www.rashia.de/" />
+	<server name="RCSN 2024" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="rcsn2024.my.id" port="6738" region="Singapore" url="http://mumble.sourceforge.net/" />
+	<server name="REDchanit.xyz | Murmur Bunker" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="play.redchanit.xyz" port="64738" region="California" url="https://redchanit.xyz/" />
+	<server name="robotboard.de Mumble Server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="chat.robotboard.de" port="64738" region="Nordrhein-Westfalen" url="http://www.mumble.info/" />
+	<server name="Rockstable Mumble Server" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="mumble.rockstable.it" port="64738" region="Sachsen" url="https://www.rockstable.it/" />
+	<server name="RogueServer.com - Live Prank Calls | Game Chat | Join Us" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="mumble.rogueserver.com" port="64738" region="New Mexico" url="http://www.rogueserver.com/" />
+	<server name="Root Of All Evil" ca="0" continent_code="EU" country="Finland" country_code="FI" ip="rootofallevil.ddns.net" port="64738" region="Uusimaa" url="https://rootofallevil.ddns.net/" />
+	<server name="RusticLAN.cz Mumble server" ca="0" continent_code="EU" country="Czechia" country_code="CZ" ip="rusticlan.cz" port="64738" region="Moravskoslezsky kraj" url="https://rusticlan.cz/" />
+	<server name="SAHABAT ORPI GORONTALO" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="orpi.mumble.my.id" port="64737" region="Singapore" url="http://www.mumble.info/" />
+	<server name="Sapien Industries Ltd." ca="0" continent_code="EU" country="Denmark" country_code="DK" ip="sapien.dk" port="64738" region="Hovedstaden" url="http://sapien.dk/" />
+	<server name="SaunaMumble" ca="0" continent_code="EU" country="Finland" country_code="FI" ip="mumble.the-sauna.icu" port="64738" region="Uusimaa" url="https://the-sauna.icu/mumble/" />
+	<server name="savage2.winex.org" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="winex.org" port="64800" region="Moskovskaya oblast'" url="http://savage2.winex.org/" />
+	<server name="scrEsign Support" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="85.214.32.81" port="64738" region="Berlin" url="https://scresign.de" />
+	<server name="scrumplex.net" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="scrumplex.net" port="64738" region="Baden-Wurttemberg" url="https://scrumplex.net/" />
+	<server name="Servername | Starka.st | Sverige | Uppsala | Telia | 800Gbps | IPv6 | Opus | 1.6.0 | Skapa din egen kanal/Eget rum | Create your own channel/Own room | ÅÄÖ/WTF-8/Unicode | Port 64738 |" ca="1" continent_code="EU" country="Sweden" country_code="SE" ip="Hostname.starka.st" port="64738" region="Stockholms lan" url="https://website.starka.st/" />
+	<server name="Shaded-Hearts.net Mumble Server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="shplus.net" port="64738" region="Sachsen" url="https://shaded-hearts.net" />
+	<server name="shadowfr69 Mumble" ca="0" continent_code="EU" country="France" country_code="FR" ip="shadowfr69.eu" port="64738" region="Ile-de-France" url="http://shadowfr69.eu/" />
+	<server name="SHOOTKAM" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="m300.mumble.com" port="63701" region="Hessen" url="shootkam.mumble.com" />
+	<server name="šijanec.eu." ca="1" continent_code="EU" country="Slovenia" country_code="SI" ip="2a01:261:e80:4801::1" port="64738" region="Ljubljana" url="http://šijanec.eu./" />
+	<server name="Sipulimaito Gaming" ca="1" continent_code="EU" country="Finland" country_code="FI" ip="onion.sipulimaito.fi" port="64738" region="Kymenlaakso" url="https://sipulimaito.fi" />
+	<server name="Slackel" ca="0" continent_code="EU" country="Greece" country_code="GR" ip="ariadni.noip.me" port="64738" region="Dytiki Ellada" url="http://www.slackel.gr" />
+	<server name="SlyGaming" ca="0" continent_code="OC" country="Australia" country_code="AU" ip="mumble.guyf.net" port="64738" region="Victoria" url="https://waz.au/" />
+	<server name="Solari" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="2600:3c03::f03c:93ff:febe:5054" port="64738" region="New Jersey" url="https://mumble.natehiggers.org/" />
+	<server name="SOR Gaming Voip Community" ca="0" continent_code="AS" country="China" country_code="CN" ip="39.108.127.85" port="64738" region="Guangdong" url="http://128.1.131.235" />
+	<server name="SpectralNekos" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.chris2000sp.com" port="64738" region="Baden-Wurttemberg" url="http://natenom.de/" />
+	<server name="Stronk Club Australia" ca="1" continent_code="OC" country="Australia" country_code="AU" ip="mumble.stronk.club" port="64738" region="New South Wales" url="https://stronk.club/" />
+	<server name="Sub's Lair" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="maddsub.us.to" port="64738" region="Oregon" url="http://igniteme.co" />
+	<server name="Super Secret Server" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="jugregator.org" port="64444" region="Sankt-Peterburg" url="https://mmbl.jugregator.org" />
+	<server name="SysPath.fr" ca="0" continent_code="EU" country="France" country_code="FR" ip="syspath.fr" port="64738" region="Hauts-de-France" url="http://www.syspath.fr" />
+	<server name="Systemli" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="talk.systemli.org" port="64738" region="Berlin" url="https://systemli.org" />
+	<server name="Taubes Mumble" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="voice.mumble-funk.de" port="35000" region="Berlin" url="http://www.mumble-funk.de/" />
+	<server name="Team Buttz's Butt Brigade" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="mumble.teambuttz.com" port="64738" region="Virginia" url="https://i.imgur.com/NeBP9OS.jpg" />
+	<server name="TeamCallaghan" ca="0" continent_code="OC" country="New Zealand" country_code="NZ" ip="teamcallaghan.mumble.co.nz" port="64814" region="Auckland" url="http://mumble.sourceforge.net/" />
+	<server name="TechSupport.IS Mumble" ca="1" continent_code="EU" country="Iceland" country_code="IS" ip="mumble.techsupport.is" port="64738" region="Hofudborgarsvaedi" url="https://techsupport.is/" />
+	<server name="TEHWEBZ Public Server" ca="1" continent_code="NA" country="United States of America" country_code="US" ip="tehwebz.net" port="4738" region="Georgia" url="https://tehwebz.net" />
+	<server name="teldrassil.pewpew.network" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="teldrassil.pewpew.network" port="64738" region="Hessen" url="https://finke-it.net" />
+	<server name="Test server" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="srv.mumble.ru" port="60000" region="Sachsen" url="http://mumble.ru/" />
+	<server name="TGG Public Mumble Server" ca="1" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="agsbox.com" port="64738" region="England" url="https://www.agsbox.com/" />
+	<server name="The Good Shepherd" ca="1" continent_code="EU" country="Sweden" country_code="SE" ip="mumble.jilits.se" port="64738" region="Vastra Gotalands lan" url="https://jilits.se" />
+	<server name="ThFree Co VOICE" ca="1" continent_code="EU" country="Russian Federation" country_code="RU" ip="voice.thfree.ru" port="64738" region="Sankt-Peterburg" url="https://thfree.ru/" />
+	<server name="TUXOID" ca="0" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="kxse.de" port="64738" region="England" url="http://www.kxse.de" />
+	<server name="UnitedEarthGovernment-CN" ca="0" continent_code="AS" country="China" country_code="CN" ip="voice.cn.uegov.org" port="64738" region="Guangdong" url="https://docs.uegov.org" />
+	<server name="usajobs.gov" ca="1" continent_code="nil" country="-" country_code="-" ip="mumble.worm.pink" port="64738" region="-" url="https://mumble.worm.pink/" />
+	<server name="Ustim Public" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="mumble.ustim.ru" port="64738" region="Adygeya, Respublika" url="https://ustim.ru/" />
+	<server name="Voice chat on igorek.dev" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="voice.igorek.dev" port="64738" region="Sankt-Peterburg" url="https://igorek.dev" />
+	<server name="Voice_WWZ_Server" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="wwz.ventlab.biz" port="64731" region="Chelyabinskaya oblast'" url="https://wwz.ventlab.biz/" />
+	<server name="Voice-Server.de" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.voice-server.de" port="64739" region="Sachsen" url="http://www.voice-server.de/" />
+	<server name="VoIP de markolino style" ca="0" continent_code="EU" country="Spain" country_code="ES" ip="markolinostyle.com" port="33148" region="Madrid, Comunidad de" url="http://www.mumble.info/" />
+	<server name="Wig Riders" ca="0" continent_code="NA" country="United States of America" country_code="US" ip="162.212.158.84" port="64738" region="Illinois" url="https://mbl.ladies-swim.club/" />
+	<server name="Winter Coalition" ca="0" continent_code="AS" country="China" country_code="CN" ip="mumble.winterco.cn" port="64738" region="Hubei" url="https://wnt2.co/0vwUS3d" />
+	<server name="WW_Westerwald_Betzdorf" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="dl6pm.spdns.eu" port="64738" region="Nordrhein-Westfalen" url="https://www.qrz.com/db/dl6pm/" />
+	<server name="www.beve-studio.my.id" ca="0" continent_code="AS" country="Singapore" country_code="SG" ip="beve-studio.my.id" port="1212" region="Singapore" url="http://www.mumble.info/" />
+	<server name="Xonotic Australia" ca="1" continent_code="OC" country="Australia" country_code="AU" ip="mumble.xonotic.au" port="64738" region="New South Wales" url="https://xonotic.au/" />
+	<server name="Xystus_FCK-PTN" ca="0" continent_code="EU" country="Germany" country_code="DE" ip="xystus.servequake.com" port="64738" region="Nordrhein-Westfalen" url="https:/terraner.zapto.org/" />
+	<server name="YO Mumble" ca="0" continent_code="EU" country="Romania" country_code="RO" ip="mumble.mapszone.eu" port="64738" region="Ilfov" url="https://mapszone.eu" />
+	<server name="YuGiOhJCJ's server" ca="1" continent_code="EU" country="France" country_code="FR" ip="yugiohjcj.ddns.net" port="64738" region="Ile-de-France" url="http://yugiohjcj.ddns.net/" />
+	<server name="ZdechovNET" ca="0" continent_code="EU" country="Czechia" country_code="CZ" ip="sky.zdechov.net" port="64738" region="Zlinsky kraj" url="https://mumble.zdechov.net/" />
+	<server name="Zom.bi" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="mumble.zom.bi" port="64738" region="Sachsen" url="https://zom.bi/services.html" />
+	<server name="Zwies.net Mumble Server" ca="0" continent_code="OC" country="New Zealand" country_code="NZ" ip="http://www.zwies.net" port="64738" region="West Coast" url="http://www.zwies.net" />
+	<server name="Аренда серверов -&gt; 100 слотов = 500 рублей [Mumble.ru]" ca="1" continent_code="EU" country="Germany" country_code="DE" ip="srv.mumble.ru" port="61744" region="Sachsen" url="http://mumble.ru/" />
+	<server name="Пупупу/голос" ca="0" continent_code="EU" country="Russian Federation" country_code="RU" ip="194.87.80.32" port="64738" region="Moskva" url="http://www.mumble.info/" />
+	<server name="清风旧雨今犹在，何惧寒风酷暑追。" ca="0" continent_code="EU" country="United Kingdom of Great Britain and Northern Ireland" country_code="GB" ip="jiaxu.site" port="64738" region="England" url="https://jiaxu.site" />
+</servers>

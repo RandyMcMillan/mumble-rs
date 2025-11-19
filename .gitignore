@@ -1,3 +1,4 @@
+.genkit
 murmur.sqlite-shm
 murmur.sqlite-wal
 murmur.sqlite
@@ -7,3 +8,4 @@ mumble-server.pem
 
 /vendor
 /target
+public_servers.json

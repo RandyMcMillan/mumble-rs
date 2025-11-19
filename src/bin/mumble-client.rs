@@ -23,7 +23,7 @@ async fn main() -> Result<()> {
     let public_servers = match public::fetch_servers().await {
         Ok(servers) => servers,
         Err(e) => {
-            eprintln!("Failed to fetch public servers: {}", e);
+            eprintln!("Failed to parse embedded public server list: {}", e);
             vec![]
         }
     };
