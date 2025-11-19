@@ -22,8 +22,10 @@ crossbeam-channel = "0.5"
 crossterm = { version = "0.28.0", features = ["event-stream", "serde"] }
 ed25519-dalek = { version = "2.2.0", features = ["pkcs8"] }
 env_logger = "0.11"
+futures-util = "0.3.31"
 hex = "0.4.3"
 log = "0.4"
+mdns = "3.0.0"
 mumble-sys = { path = "./mumble-sys" }
 pem = "3.0.6"
 pkcs8 = { version = "0.10.2", features = ["pem"] }
@@ -32,9 +34,11 @@ ratatui = { version = "0.28", default-features = false, features = [
     'serde',
 ] }
 rcgen = "0.14.5"
+reqwest = { version = "0.12.24", features = ["json"] }
 rustls = "0.23.11"
 rustls-pemfile = "2.1.2"
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.145"
 tokio = { version = "1", features = ["full"] }
 tokio-rusqlite = "0.5.0"
 tokio-rustls = "0.26.0"

@@ -1,6 +1,6 @@
 use anyhow::Result;
 use mumble::{
-    embed, lan,
+    embed, lan, public,
     ui::client::{LocalServerState, ServerCommand, Tui},
 };
 use std::sync::{Arc, Mutex};
@@ -19,11 +19,24 @@ async fn start_server_task(
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let servers = lan::fetch_servers();
+    let lan_servers = lan::discover_servers().await;
+    let public_servers = match public::fetch_servers().await {
+        Ok(servers) => servers,
+        Err(e) => {
+            // Log the error and continue with an empty list
+            eprintln!("Failed to fetch public servers: {}", e);
+            vec![]
+        }
+    };
     let (command_tx, mut command_rx) = mpsc::channel(10);
     let server_log_buffer = Arc::new(Mutex::new(Vec::new()));
 
-    let mut tui = Tui::new(servers, Arc::clone(&server_log_buffer), command_tx)?;
+    let mut tui = Tui::new(
+        lan_servers,
+        public_servers,
+        Arc::clone(&server_log_buffer),
+        command_tx,
+    )?;
 
     let mut server_handle: Option<task::JoinHandle<Result<()>>> = None;
     let mut shutdown_tx: Option<oneshot::Sender<()>> = None;
@@ -44,17 +57,20 @@ async fn main() -> Result<()> {
                     tui.app_state.local_server_state = LocalServerState::Starting;
                     tui.draw()?; // Redraw to show "Starting"
 
-                    let (handle_new, tx_new) = start_server_task(Arc::clone(&server_log_buffer)).await;
+                    let (handle_new, tx_new) =
+                        start_server_task(Arc::clone(&server_log_buffer)).await;
                     server_handle = Some(handle_new);
                     shutdown_tx = Some(tx_new);
                     tui.app_state.local_server_state = LocalServerState::Running;
-                    tui.app_state.log("[INFO] Server restarted successfully.".to_string());
+                    tui.app_state
+                        .log("[INFO] Server restarted successfully.".to_string());
                 }
             }
         }
 
         // --- Step 2: Handle commands from the TUI ---
-        if stopping_handle.is_none() { // Don't process new commands while a stop is pending
+        if stopping_handle.is_none() {
+            // Don't process new commands while a stop is pending
             if let Ok(command) = command_rx.try_recv() {
                 match command {
                     ServerCommand::Start => {
@@ -63,11 +79,13 @@ async fn main() -> Result<()> {
                             tui.app_state.log("[CMD] Starting server...".to_string());
                             tui.draw()?; // Redraw to show "Starting"
 
-                            let (handle, tx) = start_server_task(Arc::clone(&server_log_buffer)).await;
+                            let (handle, tx) =
+                                start_server_task(Arc::clone(&server_log_buffer)).await;
                             server_handle = Some(handle);
                             shutdown_tx = Some(tx);
                             tui.app_state.local_server_state = LocalServerState::Running;
-                            tui.app_state.log("[INFO] Server started successfully.".to_string());
+                            tui.app_state
+                                .log("[INFO] Server started successfully.".to_string());
                         }
                     }
                     ServerCommand::Stop => {

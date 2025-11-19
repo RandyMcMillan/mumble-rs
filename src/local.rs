@@ -1,5 +1,5 @@
 use crate::lan::ServerInfo;
-use std::net::TcpStream;
+use std::net::{IpAddr, Ipv4Addr, TcpStream};
 
 const LOCAL_SERVER_ADDRESS: &str = "127.0.0.1:64738";
 
@@ -12,9 +12,8 @@ pub fn detect_local_server() -> Option<ServerInfo> {
         Some(ServerInfo {
             name: "Local Server".to_string(),
             host: "127.0.0.1".to_string(),
+            ip: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
             port: 64738,
-            users: 0, // We can't know this from a simple port check
-            max_users: 0, // We can't know this either
         })
     } else {
         None

@@ -10,6 +10,7 @@ pub mod db;
 pub mod embed;
 pub mod lan;
 pub mod local;
+pub mod public;
 pub mod server;
 pub mod ui;
 

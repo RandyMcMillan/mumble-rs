@@ -1,4 +1,4 @@
-use crate::lan::ServerInfo;
+use crate::{lan, public};
 use crate::ui::{local_server, log_view, servers};
 use crossterm::{
     event::{self, Event, KeyCode, KeyEventKind},
@@ -36,15 +36,17 @@ pub enum CurrentView {
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum FocusedWidget {
     LocalServer,
-    ServerList,
+    LanServerList,
+    PublicServerList,
     Content,
 }
 
 impl FocusedWidget {
     pub fn next(&self) -> Self {
         match self {
-            Self::LocalServer => Self::ServerList,
-            Self::ServerList => Self::Content,
+            Self::LocalServer => Self::LanServerList,
+            Self::LanServerList => Self::PublicServerList,
+            Self::PublicServerList => Self::Content,
             Self::Content => Self::LocalServer,
         }
     }
@@ -52,17 +54,23 @@ impl FocusedWidget {
 
 pub struct AppState {
     log_messages: Vec<String>,
-    servers: Vec<ServerInfo>,
+    lan_servers: Vec<lan::ServerInfo>,
+    public_servers: Vec<public::ServerInfo>,
     pub local_server_state: LocalServerState,
     pub current_view: CurrentView,
     pub local_server_logs: Arc<Mutex<Vec<String>>>,
     pub focused_widget: FocusedWidget,
-    pub selected_server: usize,
+    pub selected_lan_server: usize,
+    pub selected_public_server: usize,
     pub content_scroll: usize,
 }
 
 impl AppState {
-    fn new(servers: Vec<ServerInfo>, local_server_logs: Arc<Mutex<Vec<String>>>) -> Self {
+    fn new(
+        lan_servers: Vec<lan::ServerInfo>,
+        public_servers: Vec<public::ServerInfo>,
+        local_server_logs: Arc<Mutex<Vec<String>>>,
+    ) -> Self {
         let log_messages = vec![
             "[INFO] Welcome to Mumble!".to_string(),
             "[INFO] Press 'q' to quit, 'Tab' to navigate.".to_string(),
@@ -72,12 +80,14 @@ impl AppState {
 
         Self {
             log_messages,
-            servers,
+            lan_servers,
+            public_servers,
             local_server_state: LocalServerState::Stopped,
             current_view: CurrentView::Chat,
             local_server_logs,
-            focused_widget: FocusedWidget::ServerList,
-            selected_server: 0,
+            focused_widget: FocusedWidget::LanServerList,
+            selected_lan_server: 0,
+            selected_public_server: 0,
             content_scroll: 0,
         }
     }
@@ -95,7 +105,8 @@ pub struct Tui {
 
 impl Tui {
     pub fn new(
-        servers: Vec<ServerInfo>,
+        lan_servers: Vec<lan::ServerInfo>,
+        public_servers: Vec<public::ServerInfo>,
         local_server_logs: Arc<Mutex<Vec<String>>>,
         command_tx: mpsc::Sender<ServerCommand>,
     ) -> io::Result<Self> {
@@ -106,7 +117,7 @@ impl Tui {
         terminal.clear()?;
         Ok(Self {
             terminal,
-            app_state: AppState::new(servers, local_server_logs),
+            app_state: AppState::new(lan_servers, public_servers, local_server_logs),
             command_tx,
         })
     }
@@ -132,9 +143,14 @@ impl Tui {
                             };
                         }
                         KeyCode::Up => match self.app_state.focused_widget {
-                            FocusedWidget::ServerList => {
-                                if self.app_state.selected_server > 0 {
-                                    self.app_state.selected_server -= 1;
+                            FocusedWidget::LanServerList => {
+                                if self.app_state.selected_lan_server > 0 {
+                                    self.app_state.selected_lan_server -= 1;
+                                }
+                            }
+                            FocusedWidget::PublicServerList => {
+                                if self.app_state.selected_public_server > 0 {
+                                    self.app_state.selected_public_server -= 1;
                                 }
                             }
                             FocusedWidget::Content => {
@@ -145,9 +161,14 @@ impl Tui {
                             _ => {}
                         },
                         KeyCode::Down => match self.app_state.focused_widget {
-                            FocusedWidget::ServerList => {
-                                if self.app_state.selected_server < self.app_state.servers.len() - 1 {
-                                    self.app_state.selected_server += 1;
+                            FocusedWidget::LanServerList => {
+                                if self.app_state.selected_lan_server < self.app_state.lan_servers.len() - 1 {
+                                    self.app_state.selected_lan_server += 1;
+                                }
+                            }
+                            FocusedWidget::PublicServerList => {
+                                if self.app_state.selected_public_server < self.app_state.public_servers.len() - 1 {
+                                    self.app_state.selected_public_server += 1;
                                 }
                             }
                             FocusedWidget::Content => {
@@ -198,6 +219,7 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(5), // Fixed height for local server widget
+            Constraint::Percentage(50),
             Constraint::Min(0),    // Remaining space for server list
         ])
         .split(left_pane);
@@ -208,12 +230,19 @@ fn ui(frame: &mut Frame, app_state: &AppState) {
     );
     frame.render_widget(local_server_widget, left_pane_layout[0]);
 
-    let server_list = servers::render_server_list(
-        &app_state.servers,
-        app_state.focused_widget == FocusedWidget::ServerList,
-        app_state.selected_server,
+    let lan_server_list = servers::render_lan_server_list(
+        &app_state.lan_servers,
+        app_state.focused_widget == FocusedWidget::LanServerList,
+        app_state.selected_lan_server,
     );
-    frame.render_widget(server_list, left_pane_layout[1]);
+    frame.render_widget(lan_server_list, left_pane_layout[1]);
+
+    let public_server_list = servers::render_public_server_list(
+        &app_state.public_servers,
+        app_state.focused_widget == FocusedWidget::PublicServerList,
+        app_state.selected_public_server,
+    );
+    frame.render_widget(public_server_list, left_pane_layout[2]);
 
     // Split the right pane for content and client log
     let right_pane_layout = Layout::default()
